@@ -26,6 +26,27 @@ public class ZoneServiceImpl implements IZoneService {
         return zoneRepository.findById(zoneId).orElse(null);
     }
 
+    @Override
+    public Zone createZone(Zone zone) {
+        return zoneRepository.save(zone);
+    }
+
+    @Override
+    public Zone updateZoneById(Long zoneId, Zone zone) {
+        Optional<Zone> zoneUpdate=zoneRepository.findById(zoneId);
+        if(zoneUpdate.isPresent()){
+            Zone toUpdate=zoneUpdate.get();
+            toUpdate.setZoneName(zone.getZoneName());
+            toUpdate.setTransportChoice(zone.getTransportChoice());
+            toUpdate.setCode(zone.getCode());
+            toUpdate.setUpperBound(zone.getUpperBound());
+            toUpdate.setLowerBound(zone.getLowerBound());
+            toUpdate.setPrice(zone.getPrice());
+            return zoneRepository.save(toUpdate);
+        }else
+            return null;
+    }
+
 
     @Override
     public void deleteZoneById(Long zoneId) {

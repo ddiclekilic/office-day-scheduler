@@ -10,8 +10,8 @@ import java.util.Date;
 @Data
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name="out_of_office_days")
-public class OutOfOfficeDays {
+@Table(name="out_of_office_day")
+public class OutOfOfficeDay {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;

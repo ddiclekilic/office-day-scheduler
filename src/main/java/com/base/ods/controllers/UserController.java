@@ -3,6 +3,7 @@ package com.base.ods.controllers;
 import com.base.ods.entities.User;
 import com.base.ods.requests.UserCreateRequest;
 import com.base.ods.requests.UserUpdateRequest;
+import com.base.ods.responses.UserResponse;
 import com.base.ods.services.IUserService;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,8 +19,8 @@ public class UserController {
         this.userService = userService;
     }
     @GetMapping
-    public List<User> getAllUsers(@RequestParam Optional<Long> roleId){
-        return userService.getAllUsersWithParam(roleId);
+    public List<UserResponse> getAllUsers(@RequestParam Optional<Long> roleId, @RequestParam Optional<Long> departmentId){
+        return userService.getAllUsersWithParam(roleId, departmentId);
     }
     @GetMapping("/{userId}")
     public User getUserById(@PathVariable Long userId){
@@ -30,8 +31,8 @@ public class UserController {
         return userService.createUser(userCreateRequest);
     }
     @PutMapping("/{userId}")
-    public User updateUser(@PathVariable Long userId, @RequestBody UserUpdateRequest userUpdateRequest){
-        return userService.updateUser(userId, userUpdateRequest);
+    public User updateUserById(@PathVariable Long userId, @RequestBody UserUpdateRequest userUpdateRequest){
+        return userService.updateUserById(userId, userUpdateRequest);
     }
     @DeleteMapping("/{userId}")
     public void deleteUserById(@PathVariable Long userId){

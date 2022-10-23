@@ -7,5 +7,7 @@ import java.util.List;
 public interface IZoneService {
     List<Zone> getAllZones();
     Zone getZoneById(Long zoneId);
+    Zone createZone(Zone zone);
+    Zone updateZoneById(Long zoneId, Zone zone);
     void deleteZoneById(Long zoneId);
 }

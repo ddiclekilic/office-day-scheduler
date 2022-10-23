@@ -22,7 +22,14 @@ public class ZoneController {
     public Zone getZoneById(@PathVariable Long zoneId){
         return zoneService.getZoneById(zoneId);
     }
-
+    @PostMapping
+    public Zone createZone(@RequestBody Zone zone){
+        return zoneService.createZone(zone);
+    }
+    @PutMapping("/{zoneId}")
+    public Zone updateZoneById(@PathVariable Long zoneId, @RequestBody Zone zone){
+        return zoneService.updateZoneById(zoneId, zone);
+    }
     @DeleteMapping("/{zoneId}")
     public void deleteZone(@PathVariable Long zoneId){
         zoneService.deleteZoneById(zoneId);

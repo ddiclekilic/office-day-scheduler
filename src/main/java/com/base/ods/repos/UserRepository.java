@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByRoleId(Long roleId);
+    List<User> findByDepartmentId(Long departmentId);
 }

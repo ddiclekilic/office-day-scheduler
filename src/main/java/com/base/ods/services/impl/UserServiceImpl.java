@@ -7,6 +7,7 @@ import com.base.ods.entities.Zone;
 import com.base.ods.repos.UserRepository;
 import com.base.ods.requests.UserCreateRequest;
 import com.base.ods.requests.UserUpdateRequest;
+import com.base.ods.responses.UserResponse;
 import com.base.ods.services.IDepartmentService;
 import com.base.ods.services.IRoleService;
 import com.base.ods.services.IUserService;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements IUserService {
@@ -30,11 +32,15 @@ public class UserServiceImpl implements IUserService {
         this.roleService=roleService;
     }
     @Override
-    public List<User> getAllUsersWithParam(Optional<Long> roleId) {
-        if(roleId.isPresent()){
-            return userRepository.findByRoleId(roleId.get());
-        }else
-            return userRepository.findAll();
+    public List<UserResponse> getAllUsersWithParam(Optional<Long> roleId, Optional<Long> departmentId) {
+        List<User> list;
+        if(roleId.isPresent())
+            list= userRepository.findByRoleId(roleId.get());
+        else if(departmentId.isPresent())
+            list= userRepository.findByDepartmentId(departmentId.get());
+        else
+            list= userRepository.findAll();
+        return list.stream().map(u->new UserResponse(u)).collect(Collectors.toList());
     }
     @Override
     public User getUserById(Long userId) {
@@ -61,7 +67,7 @@ public class UserServiceImpl implements IUserService {
             return null;
     }
     @Override
-    public User updateUser(Long userId, UserUpdateRequest userUpdateRequest) {
+    public User updateUserById(Long userId, UserUpdateRequest userUpdateRequest) {
         Optional<User> user=userRepository.findById(userId);
         Department department=departmentService.getDepartmentById(userUpdateRequest.getDepartmentId());
         Zone zone=zoneService.getZoneById(userUpdateRequest.getZoneId());

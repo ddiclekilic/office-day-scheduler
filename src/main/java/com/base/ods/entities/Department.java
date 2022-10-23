@@ -15,9 +15,9 @@ public class Department {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     String departmentCode;
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false) //unique
     String groupCode;
     //ondelete action
     @OneToOne(fetch=FetchType.LAZY)
