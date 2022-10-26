@@ -1,4 +1,4 @@
-package com.base.ods.entities;
+package com.base.ods.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Data
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name="user")
+@Table(name = "user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,18 +25,18 @@ public class User {
     String email;
     @Column(nullable = false)
     String password;
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="department_id") //nullable=false kaldirildi
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id") //nullable=false kaldirildi
     @JsonIgnore
     Department department;
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="zone_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "zone_id", nullable = false)
     @JsonIgnore
     Zone zone;
     @Column(nullable = false)
     String transportChoice;
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="role_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id", nullable = false)
     @JsonIgnore
     Role role;
 }

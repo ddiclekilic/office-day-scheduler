@@ -1,6 +1,6 @@
 package com.base.ods.responses;
 
-import com.base.ods.entities.User;
+import com.base.ods.domain.User;
 import lombok.Data;
 
 @Data

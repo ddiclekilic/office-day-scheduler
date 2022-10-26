@@ -1,6 +1,6 @@
 package com.base.ods.services;
 
-import com.base.ods.entities.OutOfOfficeDay;
+import com.base.ods.domain.OutOfOfficeDay;
 
 import java.util.List;
 

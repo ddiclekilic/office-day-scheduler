@@ -1,6 +1,6 @@
 package com.base.ods.services;
 
-import com.base.ods.entities.User;
+import com.base.ods.domain.User;
 import com.base.ods.requests.UserCreateRequest;
 import com.base.ods.requests.UserUpdateRequest;
 import com.base.ods.responses.UserResponse;
@@ -14,5 +14,4 @@ public interface IUserService {
     User createUser(UserCreateRequest userCreateRequest);
     User updateUserById(Long userId, UserUpdateRequest userUpdateRequest);
     void deleteUserById(Long userId);
-
 }

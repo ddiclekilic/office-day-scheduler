@@ -1,6 +1,6 @@
 package com.base.ods.services;
 
-import com.base.ods.entities.Calendar;
+import com.base.ods.domain.Calendar;
 import com.base.ods.requests.CalendarCreateRequest;
 import com.base.ods.requests.CalendarUpdateRequest;
 

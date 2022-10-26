@@ -1,23 +1,21 @@
 package com.base.ods.controllers;
 
-import com.base.ods.entities.User;
+import com.base.ods.domain.User;
 import com.base.ods.requests.UserCreateRequest;
 import com.base.ods.requests.UserUpdateRequest;
 import com.base.ods.responses.UserResponse;
 import com.base.ods.services.IUserService;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/user")
+@AllArgsConstructor
 public class UserController {
     private IUserService userService;
-
-    public UserController(IUserService userService) {
-        this.userService = userService;
-    }
     @GetMapping
     public List<UserResponse> getAllUsers(@RequestParam Optional<Long> roleId, @RequestParam Optional<Long> departmentId){
         return userService.getAllUsersWithParam(roleId, departmentId);

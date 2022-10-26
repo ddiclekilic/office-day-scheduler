@@ -1,22 +1,20 @@
 package com.base.ods.controllers;
 
-import com.base.ods.entities.Calendar;
+import com.base.ods.domain.Calendar;
 import com.base.ods.requests.CalendarCreateRequest;
 import com.base.ods.requests.CalendarUpdateRequest;
 import com.base.ods.services.ICalendarService;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/calendars")
+@RequestMapping("/calendar")
+@AllArgsConstructor
 public class CalendarController {
     private ICalendarService calendarService;
-
-    public CalendarController(ICalendarService calendarService) {
-        this.calendarService = calendarService;
-    }
     @GetMapping
     public List<Calendar> getAllCalendars(@RequestParam Optional<Long> userId, @RequestParam Optional<String> dateMonth, @RequestParam Optional<String> dateYear){
         return calendarService.getAllCalendars(userId, dateMonth, dateYear);

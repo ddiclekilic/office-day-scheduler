@@ -1,6 +1,6 @@
-package com.base.ods.repos;
+package com.base.ods.repository;
 
-import com.base.ods.entities.Calendar;
+import com.base.ods.domain.Calendar;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

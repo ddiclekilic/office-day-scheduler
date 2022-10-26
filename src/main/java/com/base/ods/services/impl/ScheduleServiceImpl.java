@@ -1,32 +1,29 @@
 package com.base.ods.services.impl;
 
-import com.base.ods.entities.Schedule;
-import com.base.ods.entities.User;
-import com.base.ods.repos.ScheduleRepository;
+import com.base.ods.domain.Schedule;
+import com.base.ods.domain.User;
+import com.base.ods.repository.ScheduleRepository;
 import com.base.ods.requests.ScheduleCreateRequest;
 import com.base.ods.requests.ScheduleUpdateRequest;
 import com.base.ods.services.IScheduleService;
 import com.base.ods.services.IUserService;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class ScheduleServiceImpl implements IScheduleService {
     private ScheduleRepository scheduleRepository;
     private IUserService userService;
 
-    public ScheduleServiceImpl(ScheduleRepository scheduleRepository, IUserService userService) {
-        this.scheduleRepository = scheduleRepository;
-        this.userService=userService;
-    }
-
     @Override
     public List<Schedule> getAllSchedules(Optional<Long> userId, Optional<String> dateMonth, Optional<String> dateYear) {
-        if(userId.isPresent())
+        if (userId.isPresent())
             return scheduleRepository.findByUserId(userId.get());
-        else if(dateMonth.isPresent() && dateYear.isPresent())
+        else if (dateMonth.isPresent() && dateYear.isPresent())
             return scheduleRepository.findByDateMonthAndDateYear(dateMonth.get(), dateYear.get());
         return scheduleRepository.findAll();
     }
@@ -38,9 +35,9 @@ public class ScheduleServiceImpl implements IScheduleService {
 
     @Override
     public Schedule createSchedule(ScheduleCreateRequest scheduleCreateRequest) {
-        User user=userService.getUserById(scheduleCreateRequest.getUserId());
-        if(user!=null){
-            Schedule toSave=new Schedule();
+        User user = userService.getUserById(scheduleCreateRequest.getUserId());
+        if (user != null) {
+            Schedule toSave = new Schedule();
             toSave.setDateMonth(scheduleCreateRequest.getDateMonth());
             toSave.setOfficeDay(scheduleCreateRequest.getOfficeDay());
             toSave.setDateYear(scheduleCreateRequest.getDateYear());
@@ -50,15 +47,15 @@ public class ScheduleServiceImpl implements IScheduleService {
             toSave.setReport(scheduleCreateRequest.getReport());
             toSave.setUser(user);
             return scheduleRepository.save(toSave);
-        }else
+        } else
             return null;
     }
 
     @Override
     public Schedule updateScheduleById(Long scheduleId, ScheduleUpdateRequest scheduleUpdateRequest) {
-        Optional<Schedule> schedule=scheduleRepository.findById(scheduleId);
-        if(schedule.isPresent()){
-            Schedule toUpdate=schedule.get();
+        Optional<Schedule> schedule = scheduleRepository.findById(scheduleId);
+        if (schedule.isPresent()) {
+            Schedule toUpdate = schedule.get();
             toUpdate.setDateYear(scheduleUpdateRequest.getDateYear());
             toUpdate.setDateMonth(scheduleUpdateRequest.getDateMonth());
             toUpdate.setVacation(scheduleUpdateRequest.getVacation());
@@ -67,7 +64,7 @@ public class ScheduleServiceImpl implements IScheduleService {
             toUpdate.setWorkFromHome(scheduleUpdateRequest.getWorkFromHome());
             toUpdate.setTotalDay(scheduleUpdateRequest.getTotalDay());
             return scheduleRepository.save(toUpdate);
-        }else
+        } else
             return null;
     }
 

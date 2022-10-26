@@ -1,4 +1,4 @@
-package com.base.ods.entities;
+package com.base.ods.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Data
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name="department")
+@Table(name = "department")
 public class Department {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,12 +20,12 @@ public class Department {
     @Column(nullable = false) //unique
     String groupCode;
     //ondelete action
-    @OneToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="department_manager_id", unique = true) // unique???? nullable = false kaldirildi
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_manager_id", unique = true) // unique???? nullable = false kaldirildi
     @JsonIgnore
     User departmentManager;
-    @OneToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="group_manager_id", unique = true) //nullable = false kaldirildi
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_manager_id", unique = true) //nullable = false kaldirildi
     @JsonIgnore
     User groupManager;
 }

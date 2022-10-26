@@ -1,4 +1,4 @@
-package com.base.ods.entities;
+package com.base.ods.domain;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -10,7 +10,7 @@ import java.util.Date;
 @Data
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name="out_of_office_day")
+@Table(name = "out_of_office_day")
 public class OutOfOfficeDay {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

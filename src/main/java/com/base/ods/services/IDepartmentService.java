@@ -1,6 +1,6 @@
 package com.base.ods.services;
 
-import com.base.ods.entities.Department;
+import com.base.ods.domain.Department;
 import com.base.ods.requests.DepartmentRequest;
 
 import java.util.List;

@@ -1,22 +1,20 @@
 package com.base.ods.controllers;
 
-import com.base.ods.entities.Schedule;
+import com.base.ods.domain.Schedule;
 import com.base.ods.requests.ScheduleCreateRequest;
 import com.base.ods.requests.ScheduleUpdateRequest;
 import com.base.ods.services.IScheduleService;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/schedules")
+@RequestMapping("/schedule")
+@AllArgsConstructor
 public class ScheduleController {
     private IScheduleService scheduleService;
-
-    public ScheduleController(IScheduleService scheduleService) {
-        this.scheduleService = scheduleService;
-    }
     @GetMapping
     public List<Schedule> getAllSchedules(@RequestParam Optional<Long> userId,@RequestParam Optional<String> dateMonth,@RequestParam Optional<String> dateYear){
         return scheduleService.getAllSchedules(userId, dateMonth, dateYear);

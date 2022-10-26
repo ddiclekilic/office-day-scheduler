@@ -1,26 +1,22 @@
 package com.base.ods.services.impl;
 
-import com.base.ods.entities.Calendar;
-import com.base.ods.entities.User;
-import com.base.ods.repos.CalendarRepository;
+import com.base.ods.domain.Calendar;
+import com.base.ods.domain.User;
+import com.base.ods.repository.CalendarRepository;
 import com.base.ods.requests.CalendarCreateRequest;
 import com.base.ods.requests.CalendarUpdateRequest;
 import com.base.ods.services.ICalendarService;
 import com.base.ods.services.IUserService;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-@Service
+@Service @AllArgsConstructor
 public class CalendarServiceImpl implements ICalendarService {
     private CalendarRepository calendarRepository;
     private IUserService userService;
-
-    public CalendarServiceImpl(CalendarRepository calendarRepository, IUserService userService) {
-        this.calendarRepository = calendarRepository;
-        this.userService=userService;
-    }
 
     @Override
     public List<Calendar> getAllCalendars(Optional<Long> userId, Optional<String> dateMonth, Optional<String> dateYear) {

@@ -1,6 +1,6 @@
-package com.base.ods.repos;
+package com.base.ods.repository;
 
-import com.base.ods.entities.Schedule;
+import com.base.ods.domain.Schedule;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

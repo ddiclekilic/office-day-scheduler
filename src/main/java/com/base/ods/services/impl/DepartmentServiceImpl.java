@@ -1,8 +1,8 @@
 package com.base.ods.services.impl;
 
-import com.base.ods.entities.Department;
-import com.base.ods.entities.User;
-import com.base.ods.repos.DepartmentRepository;
+import com.base.ods.domain.Department;
+import com.base.ods.domain.User;
+import com.base.ods.repository.DepartmentRepository;
 import com.base.ods.requests.DepartmentRequest;
 import com.base.ods.services.IDepartmentService;
 import com.base.ods.services.IUserService;
@@ -19,7 +19,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
 
     public DepartmentServiceImpl(DepartmentRepository departmentRepository, @Lazy IUserService userService) {
         this.departmentRepository = departmentRepository;
-        this.userService=userService;
+        this.userService = userService;
     }
 
     @Override
@@ -34,32 +34,32 @@ public class DepartmentServiceImpl implements IDepartmentService {
 
     @Override
     public Department createDepartment(DepartmentRequest departmentCreateRequest) {
-        User departmentManager=userService.getUserById(departmentCreateRequest.getDepartmentManagerId());
-        User groupManager=userService.getUserById(departmentCreateRequest.getGroupManagerId());
-        if(departmentManager!=null && groupManager!=null){
-            Department toSave=new Department();
+        User departmentManager = userService.getUserById(departmentCreateRequest.getDepartmentManagerId());
+        User groupManager = userService.getUserById(departmentCreateRequest.getGroupManagerId());
+        if (departmentManager != null && groupManager != null) {
+            Department toSave = new Department();
             toSave.setDepartmentCode(departmentCreateRequest.getDepartmentCode());
             toSave.setGroupCode(departmentCreateRequest.getGroupCode());
             toSave.setDepartmentManager(departmentManager);
             toSave.setGroupManager(groupManager);
             return departmentRepository.save(toSave);
-        }else
+        } else
             return null;
     }
 
     @Override
     public Department updateDepartmentById(Long departmentId, DepartmentRequest departmentUpdateRequest) {
-        Optional<Department> department=departmentRepository.findById(departmentId);
-        User departmentManager=userService.getUserById(departmentUpdateRequest.getDepartmentManagerId());
-        User groupManager=userService.getUserById(departmentUpdateRequest.getGroupManagerId());
-        if(department.isPresent() && departmentManager!=null && groupManager!=null){
-            Department toUpdate=department.get();
+        Optional<Department> department = departmentRepository.findById(departmentId);
+        User departmentManager = userService.getUserById(departmentUpdateRequest.getDepartmentManagerId());
+        User groupManager = userService.getUserById(departmentUpdateRequest.getGroupManagerId());
+        if (department.isPresent() && departmentManager != null && groupManager != null) {
+            Department toUpdate = department.get();
             toUpdate.setDepartmentCode(departmentUpdateRequest.getDepartmentCode());
             toUpdate.setGroupCode(departmentUpdateRequest.getGroupCode());
             toUpdate.setDepartmentManager(departmentManager);
             toUpdate.setGroupManager(groupManager);
             return departmentRepository.save(toUpdate);
-        }else
+        } else
             return null;
     }
 

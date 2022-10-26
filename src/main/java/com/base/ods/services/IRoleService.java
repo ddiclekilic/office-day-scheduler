@@ -1,6 +1,6 @@
 package com.base.ods.services;
 
-import com.base.ods.entities.Role;
+import com.base.ods.domain.Role;
 
 import java.util.List;
 

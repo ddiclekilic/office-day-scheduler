@@ -1,6 +1,6 @@
 package com.base.ods.services;
 
-import com.base.ods.entities.Zone;
+import com.base.ods.domain.Zone;
 
 import java.util.List;
 

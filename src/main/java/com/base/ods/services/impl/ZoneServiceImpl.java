@@ -1,20 +1,18 @@
 package com.base.ods.services.impl;
 
-import com.base.ods.entities.Zone;
-import com.base.ods.repos.ZoneRepository;
+import com.base.ods.domain.Zone;
+import com.base.ods.repository.ZoneRepository;
 import com.base.ods.services.IZoneService;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class ZoneServiceImpl implements IZoneService {
     private ZoneRepository zoneRepository;
-
-    public ZoneServiceImpl(ZoneRepository zoneRepository) {
-        this.zoneRepository = zoneRepository;
-    }
 
     @Override
     public List<Zone> getAllZones() {
@@ -33,9 +31,9 @@ public class ZoneServiceImpl implements IZoneService {
 
     @Override
     public Zone updateZoneById(Long zoneId, Zone zone) {
-        Optional<Zone> zoneUpdate=zoneRepository.findById(zoneId);
-        if(zoneUpdate.isPresent()){
-            Zone toUpdate=zoneUpdate.get();
+        Optional<Zone> zoneUpdate = zoneRepository.findById(zoneId);
+        if (zoneUpdate.isPresent()) {
+            Zone toUpdate = zoneUpdate.get();
             toUpdate.setZoneName(zone.getZoneName());
             toUpdate.setTransportChoice(zone.getTransportChoice());
             toUpdate.setCode(zone.getCode());
@@ -43,10 +41,9 @@ public class ZoneServiceImpl implements IZoneService {
             toUpdate.setLowerBound(zone.getLowerBound());
             toUpdate.setPrice(zone.getPrice());
             return zoneRepository.save(toUpdate);
-        }else
+        } else
             return null;
     }
-
 
     @Override
     public void deleteZoneById(Long zoneId) {

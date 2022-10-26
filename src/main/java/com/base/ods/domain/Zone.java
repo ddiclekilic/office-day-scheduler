@@ -1,4 +1,4 @@
-package com.base.ods.entities;
+package com.base.ods.domain;
 
 import lombok.Data;
 
@@ -6,7 +6,7 @@ import javax.persistence.*;
 
 @Data
 @Entity
-@Table(name="zone")
+@Table(name = "zone")
 public class Zone {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

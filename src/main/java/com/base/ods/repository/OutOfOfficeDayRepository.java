@@ -1,6 +1,6 @@
-package com.base.ods.repos;
+package com.base.ods.repository;
 
-import com.base.ods.entities.OutOfOfficeDay;
+import com.base.ods.domain.OutOfOfficeDay;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

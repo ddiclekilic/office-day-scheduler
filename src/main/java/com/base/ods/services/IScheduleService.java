@@ -1,6 +1,6 @@
 package com.base.ods.services;
 
-import com.base.ods.entities.Schedule;
+import com.base.ods.domain.Schedule;
 import com.base.ods.requests.ScheduleCreateRequest;
 import com.base.ods.requests.ScheduleUpdateRequest;
 
