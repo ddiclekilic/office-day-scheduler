@@ -1,9 +1,6 @@
 package com.base.ods.services.impl;
 
-import com.base.ods.domain.Department;
-import com.base.ods.domain.Role;
-import com.base.ods.domain.User;
-import com.base.ods.domain.Zone;
+import com.base.ods.domain.*;
 import com.base.ods.repository.UserRepository;
 import com.base.ods.requests.UserCreateRequest;
 import com.base.ods.requests.UserUpdateRequest;
@@ -13,6 +10,7 @@ import com.base.ods.services.IRoleService;
 import com.base.ods.services.IUserService;
 import com.base.ods.services.IZoneService;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Log4j2
 public class UserServiceImpl implements IUserService {
     private UserRepository userRepository;
     private IDepartmentService departmentService;
@@ -41,7 +40,13 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public User getUserById(Long userId) {
-        return userRepository.findById(userId).orElse(null);
+        User user = userRepository.findById(userId).orElse(null);
+        if (user != null)
+            return user;
+        else {
+            log.warn("User not found by given {} id number.", userId);
+            return null;
+        }
     }
 
     @Override
@@ -81,15 +86,23 @@ public class UserServiceImpl implements IUserService {
             toUpdate.setRole(role);
             toUpdate.setZone(zone);
             toUpdate.setDepartment(department);
-            return userRepository.save(toUpdate);
-        } else
+            userRepository.save(toUpdate);
+            log.info("User with id {} updated.", toUpdate.getId());
+            return toUpdate;
+        } else {
+            log.warn("There is no user information in the database with {} id number.", userId);
             return null;
+        }
     }
 
     @Override
     public void deleteUserById(Long userId) {
-        userRepository.deleteById(userId);
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isPresent()) {
+            userRepository.deleteById(user.get().getId());
+            log.info("User with id number {} deleted", userId);
+        } else
+            log.warn("There is no user information in the database with {} id number.", userId);
     }
-
 
 }

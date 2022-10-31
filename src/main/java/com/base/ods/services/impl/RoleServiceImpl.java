@@ -4,6 +4,7 @@ import com.base.ods.domain.Role;
 import com.base.ods.repository.RoleRepository;
 import com.base.ods.services.IRoleService;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
+@Log4j2
 public class RoleServiceImpl implements IRoleService {
     private RoleRepository roleRepository;
 
@@ -21,7 +23,13 @@ public class RoleServiceImpl implements IRoleService {
 
     @Override
     public Role getRoleById(Long roleId) {
-        return roleRepository.findById(roleId).orElse(null);
+        Role role = roleRepository.findById(roleId).orElse(null);
+        if (role != null)
+            return role;
+        else {
+            log.warn("Role not found by given {} id number.", roleId);
+            return null;
+        }
     }
 
     @Override
@@ -35,13 +43,22 @@ public class RoleServiceImpl implements IRoleService {
         if (roleUpdate.isPresent()) {
             Role toUpdate = roleUpdate.get();
             toUpdate.setRoleName(role.getRoleName());
-            return roleRepository.save(toUpdate);
-        } else
+            roleRepository.save(toUpdate);
+            log.info("Role with id {} updated.", toUpdate.getId());
+            return toUpdate;
+        } else {
+            log.warn("There is no role information in the database with {} id number.", roleId);
             return null;
+        }
     }
 
     @Override
     public void deleteRoleById(Long roleId) {
-        roleRepository.deleteById(roleId);
+        Optional<Role> role = roleRepository.findById(roleId);
+        if (role.isPresent()) {
+            roleRepository.deleteById(role.get().getId());
+            log.info("Role with id number {} deleted", roleId);
+        } else
+            log.warn("There is no role information in the database with {} id number.", roleId);
     }
 }

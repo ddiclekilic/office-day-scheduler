@@ -4,6 +4,7 @@ import com.base.ods.domain.Zone;
 import com.base.ods.repository.ZoneRepository;
 import com.base.ods.services.IZoneService;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
+@Log4j2
 public class ZoneServiceImpl implements IZoneService {
     private ZoneRepository zoneRepository;
 
@@ -21,7 +23,13 @@ public class ZoneServiceImpl implements IZoneService {
 
     @Override
     public Zone getZoneById(Long zoneId) {
-        return zoneRepository.findById(zoneId).orElse(null);
+        Zone zone = zoneRepository.findById(zoneId).orElse(null);
+        if (zone != null)
+            return zone;
+        else {
+            log.warn("Zone not found by given {} id number.", zoneId);
+            return null;
+        }
     }
 
     @Override
@@ -40,13 +48,21 @@ public class ZoneServiceImpl implements IZoneService {
             toUpdate.setUpperBound(zone.getUpperBound());
             toUpdate.setLowerBound(zone.getLowerBound());
             toUpdate.setPrice(zone.getPrice());
-            return zoneRepository.save(toUpdate);
-        } else
+            zoneRepository.save(toUpdate);
+            log.info("Zone with id {} updated.", toUpdate.getId());
+            return toUpdate;
+        } else {
+            log.warn("There is no zone information in the database with {} id number.", zoneId);
             return null;
+        }
     }
 
     @Override
     public void deleteZoneById(Long zoneId) {
-        zoneRepository.deleteById(zoneId);
-    }
+        Optional<Zone> zone = zoneRepository.findById(zoneId);
+        if (zone.isPresent()) {
+            zoneRepository.deleteById(zone.get().getId());
+            log.info("Zone with id number {} deleted", zoneId);
+        } else
+            log.warn("There is no zone information in the database with {} id number.", zoneId);    }
 }

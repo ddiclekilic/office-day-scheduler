@@ -6,6 +6,7 @@ import com.base.ods.repository.DepartmentRepository;
 import com.base.ods.requests.DepartmentRequest;
 import com.base.ods.services.IDepartmentService;
 import com.base.ods.services.IUserService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Log4j2
 public class DepartmentServiceImpl implements IDepartmentService {
     private DepartmentRepository departmentRepository;
     private IUserService userService;
@@ -29,7 +31,13 @@ public class DepartmentServiceImpl implements IDepartmentService {
 
     @Override
     public Department getDepartmentById(Long departmentId) {
-        return departmentRepository.findById(departmentId).orElse(null);
+        Department department = departmentRepository.findById(departmentId).orElse(null);
+        if (department != null)
+            return department;
+        else {
+            log.warn("Department not found by given {} id number.", departmentId);
+            return null;
+        }
     }
 
     @Override
@@ -58,13 +66,22 @@ public class DepartmentServiceImpl implements IDepartmentService {
             toUpdate.setGroupCode(departmentUpdateRequest.getGroupCode());
             toUpdate.setDepartmentManager(departmentManager);
             toUpdate.setGroupManager(groupManager);
-            return departmentRepository.save(toUpdate);
-        } else
+            departmentRepository.save(toUpdate);
+            log.info("Department with id {} updated.", toUpdate.getId());
+            return toUpdate;
+        } else {
+            log.warn("There is no department information in the database with {} id number.", departmentId);
             return null;
+        }
     }
 
     @Override
     public void deleteDepartmentById(Long departmentId) {
-        departmentRepository.deleteById(departmentId);
+        Optional<Department> department = departmentRepository.findById(departmentId);
+        if (department.isPresent()) {
+            departmentRepository.deleteById(department.get().getId());
+            log.info("Department with id number {} deleted", departmentId);
+        } else
+            log.warn("There is no department information in the database with {} id number.", departmentId);
     }
 }
