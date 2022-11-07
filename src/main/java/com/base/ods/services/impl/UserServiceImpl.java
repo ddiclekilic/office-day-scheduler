@@ -105,4 +105,8 @@ public class UserServiceImpl implements IUserService {
             log.warn("There is no user information in the database with {} id number.", userId);
     }
 
+    @Override
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
 }

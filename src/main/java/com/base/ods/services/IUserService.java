@@ -14,4 +14,5 @@ public interface IUserService {
     User createUser(UserCreateRequest userCreateRequest);
     User updateUserById(Long userId, UserUpdateRequest userUpdateRequest);
     void deleteUserById(Long userId);
+    User getUserByEmail(String email);
 }
