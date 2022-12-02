@@ -9,5 +9,5 @@ public interface IRoleService {
     Role getRoleById(Long roleId);
     Role createRole(Role role);
     Role updateRoleById(Long roleId, Role role);
-    void deleteRoleById(Long roleId);
+    void deleteRolesByIds(List<Long> ids);
 }

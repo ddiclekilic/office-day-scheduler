@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,12 +54,8 @@ public class RoleServiceImpl implements IRoleService {
     }
 
     @Override
-    public void deleteRoleById(Long roleId) {
-        Optional<Role> role = roleRepository.findById(roleId);
-        if (role.isPresent()) {
-            roleRepository.deleteById(role.get().getId());
-            log.info("Role with id number {} deleted", roleId);
-        } else
-            log.warn("There is no role information in the database with {} id number.", roleId);
+    @Transactional
+    public void deleteRolesByIds(List<Long> ids) {
+        roleRepository.deleteByIdIn(ids);
     }
 }

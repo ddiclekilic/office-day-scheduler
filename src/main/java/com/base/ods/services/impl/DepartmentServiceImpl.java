@@ -4,14 +4,18 @@ import com.base.ods.domain.Department;
 import com.base.ods.domain.User;
 import com.base.ods.repository.DepartmentRepository;
 import com.base.ods.requests.DepartmentRequest;
+import com.base.ods.responses.DepartmentResponse;
+import com.base.ods.responses.UserResponse;
 import com.base.ods.services.IDepartmentService;
 import com.base.ods.services.IUserService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Log4j2
@@ -25,8 +29,10 @@ public class DepartmentServiceImpl implements IDepartmentService {
     }
 
     @Override
-    public List<Department> getAllDepartments() {
-        return departmentRepository.findAll();
+    public List<DepartmentResponse> getAllDepartments() {
+        List<Department> list=departmentRepository.findAll();
+        return list.stream().map(d -> new DepartmentResponse(d)).collect(Collectors.toList());
+        //return departmentRepository.findAll();
     }
 
     @Override
@@ -76,12 +82,8 @@ public class DepartmentServiceImpl implements IDepartmentService {
     }
 
     @Override
-    public void deleteDepartmentById(Long departmentId) {
-        Optional<Department> department = departmentRepository.findById(departmentId);
-        if (department.isPresent()) {
-            departmentRepository.deleteById(department.get().getId());
-            log.info("Department with id number {} deleted", departmentId);
-        } else
-            log.warn("There is no department information in the database with {} id number.", departmentId);
+    @Transactional
+    public void deleteDepartmentsByIds(List<Long> ids) {
+        departmentRepository.deleteByIdIn(ids);
     }
 }

@@ -33,8 +33,8 @@ public class OutOfOfficeDayController {
         return outOfOfficeDayService.updateOutOfOfficeDayById(outOfOfficeDayId, outOfOfficeDay);
     }
 
-    @DeleteMapping("/{outOfOfficeDayId}")
-    public void deleteOfficeDayById(@PathVariable Long outOfOfficeDayId) {
-        outOfOfficeDayService.deleteOfficeDayById(outOfOfficeDayId);
+    @DeleteMapping("/{ids}")
+    public void deleteOfficeDaysByIds(@PathVariable List<Long> ids) {
+        outOfOfficeDayService.deleteOutOfOfficeDaysByIds(ids);
     }
 }

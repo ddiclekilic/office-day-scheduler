@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -21,6 +22,7 @@ import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
     private UserDetailsServiceImpl userDetailsService;
     private JwtAuthenticationEntryPoint handler;
@@ -74,8 +76,20 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers("/auth/**")
                 .permitAll()
-                .antMatchers(HttpMethod.GET,"/outofofficeday")
-                .hasAuthority("SUPER_USER")
+                .antMatchers(HttpMethod.POST, "/role")
+                .permitAll()
+                .antMatchers(HttpMethod.DELETE, "/role/**")
+                .permitAll()
+                .antMatchers(HttpMethod.GET, "/role/**")
+                .permitAll()
+                .antMatchers(HttpMethod.PUT, "/role/**")
+                .permitAll()
+                .antMatchers(HttpMethod.GET, "/outofofficeday/**")
+                .permitAll()
+                .antMatchers(HttpMethod.GET, "/user/**")
+                .permitAll()
+                .antMatchers(HttpMethod.GET, "/department/**")
+                .permitAll()
                 .anyRequest().authenticated();
 
         httpSecurity.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

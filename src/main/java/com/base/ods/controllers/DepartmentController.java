@@ -2,8 +2,10 @@ package com.base.ods.controllers;
 
 import com.base.ods.domain.Department;
 import com.base.ods.requests.DepartmentRequest;
+import com.base.ods.responses.DepartmentResponse;
 import com.base.ods.services.IDepartmentService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,7 +17,7 @@ public class DepartmentController {
     private IDepartmentService departmentService;
 
     @GetMapping
-    public List<Department> getAllDepartments() {
+    public List<DepartmentResponse> getAllDepartments() {
         return departmentService.getAllDepartments();
     }
 
@@ -34,8 +36,8 @@ public class DepartmentController {
         return departmentService.updateDepartmentById(departmentId, departmentRequest);
     }
 
-    @DeleteMapping("/{departmentId}")
-    public void deleteDepartmentById(@PathVariable Long departmentId) {
-        departmentService.deleteDepartmentById(departmentId);
+    @DeleteMapping("/{ids}")
+    public void deleteDepartmentsByIds(@PathVariable List<Long> ids) {
+        departmentService.deleteDepartmentsByIds(ids);
     }
 }

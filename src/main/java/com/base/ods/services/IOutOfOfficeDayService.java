@@ -9,5 +9,5 @@ public interface IOutOfOfficeDayService {
     OutOfOfficeDay getOutOfOfficeDayById(Long outOfOfficeDayId);
     OutOfOfficeDay createOutOfOfficeDay(OutOfOfficeDay outOfOfficeDay);
     OutOfOfficeDay updateOutOfOfficeDayById(Long outOfOfficeDayId, OutOfOfficeDay outOfOfficeDay);
-    void deleteOfficeDayById(Long outOfOfficeDayId);
+    void deleteOutOfOfficeDaysByIds(List<Long> ids);
 }

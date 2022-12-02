@@ -32,7 +32,6 @@ public class RefreshTokenServiceImpl implements IRefreshTokenService {
         refreshTokenRepository.save(token);
         return token.getToken();
     }
-
     public boolean isRefreshExpired(RefreshToken token) {
         return token.getExpiryDate().before(new Date());
     }

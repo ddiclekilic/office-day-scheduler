@@ -33,8 +33,8 @@ public class RoleController {
         return roleService.updateRoleById(roleId, role);
     }
 
-    @DeleteMapping("/{roleId}")
-    public void deleteRoleById(@PathVariable Long roleId) {
-        roleService.deleteRoleById(roleId);
+    @DeleteMapping("/{ids}")
+    public void deleteRolesByIds(@PathVariable List<Long> ids) {
+        roleService.deleteRolesByIds(ids);
     }
 }
