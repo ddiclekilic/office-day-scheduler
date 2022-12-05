@@ -90,6 +90,18 @@ public class SecurityConfig {
                 .permitAll()
                 .antMatchers(HttpMethod.GET, "/department/**")
                 .permitAll()
+                .antMatchers(HttpMethod.POST, "/outofofficeday")
+                .permitAll()
+                .antMatchers(HttpMethod.DELETE, "/outofofficeday/**")
+                .permitAll()
+                .antMatchers(HttpMethod.DELETE, "/department/**")
+                .permitAll()
+                .antMatchers(HttpMethod.POST, "/department")
+                .permitAll()
+                .antMatchers(HttpMethod.PUT, "/department/**")
+                .permitAll()
+                .antMatchers(HttpMethod.PUT, "/outofofficeday/**")
+                .permitAll()
                 .anyRequest().authenticated();
 
         httpSecurity.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

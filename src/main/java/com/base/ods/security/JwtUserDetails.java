@@ -30,7 +30,6 @@ public class JwtUserDetails implements UserDetails {
         List<GrantedAuthority> authoritiesList = new ArrayList<>();
         authoritiesList.add(new SimpleGrantedAuthority("EMPLOYEE"));
         //authoritiesList.add(new SimpleGrantedAuthority(user.getRole().getRoleName()));
-        //System.out.println(user.getRole().getRoleName());
         return new JwtUserDetails(user.getId(), user.getEmail(), user.getPassword(), authoritiesList);
     }
 
