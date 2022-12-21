@@ -1,10 +1,18 @@
 package com.base.ods.controllers;
 
-import com.base.ods.domain.Zone;
+import com.base.ods.controllers.requests.ZoneCreateRequest;
+import com.base.ods.controllers.requests.ZoneUpdateRequest;
+import com.base.ods.controllers.responses.ZoneResponse;
+import com.base.ods.mapper.ZoneResponseToDTOMapper;
 import com.base.ods.services.IZoneService;
+import com.base.ods.services.requests.ZoneCreateRequestDTO;
+import com.base.ods.services.requests.ZoneUpdateRequestDTO;
+import com.base.ods.services.responses.ZoneResponseDTO;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -12,29 +20,40 @@ import java.util.List;
 @AllArgsConstructor
 public class ZoneController {
     private IZoneService zoneService;
+    private ZoneResponseToDTOMapper mapper;
 
     @GetMapping
-    public List<Zone> getAllZones() {
-        return zoneService.getAllZones();
+    public ResponseEntity<List<ZoneResponse>> getAllZones() {
+        List<ZoneResponseDTO> zoneList = zoneService.getAllZones();
+        List<ZoneResponse> result = mapper.toResponseList(zoneList);
+        return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/{zoneId}")
-    public Zone getZoneById(@PathVariable Long zoneId) {
-        return zoneService.getZoneById(zoneId);
+    @GetMapping("/{id}")
+    public ResponseEntity<ZoneResponse> getZoneById(@PathVariable Long id) {
+        ZoneResponseDTO responseDTO = zoneService.getZoneById(id);
+        ZoneResponse result = mapper.toResponse(responseDTO);
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping
-    public Zone createZone(@RequestBody Zone zone) {
-        return zoneService.createZone(zone);
+    public ResponseEntity<ZoneResponse> createZone(@RequestBody ZoneCreateRequest zoneCreateRequest) {
+        ZoneCreateRequestDTO requestDTO = mapper.toDTO(zoneCreateRequest);
+        ZoneResponseDTO responseDTO = zoneService.createZone(requestDTO);
+        ZoneResponse result = mapper.toResponse(responseDTO);
+        return ResponseEntity.ok(result);
     }
 
-    @PutMapping("/{zoneId}")
-    public Zone updateZoneById(@PathVariable Long zoneId, @RequestBody Zone zone) {
-        return zoneService.updateZoneById(zoneId, zone);
+    @PutMapping
+    public ResponseEntity<ZoneResponse> updateZone(@RequestBody ZoneUpdateRequest zoneUpdateRequest) {
+        ZoneUpdateRequestDTO requestDTO = mapper.toDTO(zoneUpdateRequest);
+        ZoneResponseDTO responseDTO = zoneService.updateZone(requestDTO);
+        ZoneResponse result = mapper.toResponse(responseDTO);
+        return ResponseEntity.ok(result);
     }
 
-    @DeleteMapping("/{zoneId}")
-    public void deleteZone(@PathVariable Long zoneId) {
-        zoneService.deleteZoneById(zoneId);
+    @DeleteMapping("/{ids}")
+    public void deleteZone(@PathVariable List<Long> ids) {
+        zoneService.deleteZonesByIds(ids);
     }
 }

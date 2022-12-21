@@ -1,12 +1,15 @@
 package com.base.ods.domain;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
 
 @Data
 @Entity
 @Table(name = "zone")
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Zone {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,39 +1,59 @@
 package com.base.ods.controllers;
 
-import com.base.ods.domain.User;
-import com.base.ods.requests.UserCreateRequest;
-import com.base.ods.requests.UserUpdateRequest;
-import com.base.ods.responses.UserResponse;
+import com.base.ods.controllers.requests.UserCreateRequest;
+import com.base.ods.controllers.requests.UserUpdateRequest;
+import com.base.ods.controllers.responses.UserResponse;
+import com.base.ods.mapper.UserResponseToDTOMapper;
 import com.base.ods.services.IUserService;
+import com.base.ods.services.requests.UserCreateRequestDTO;
+import com.base.ods.services.requests.UserUpdateRequestDTO;
+import com.base.ods.services.responses.UserResponseDTO;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")
 @AllArgsConstructor
 public class UserController {
     private IUserService userService;
+    private UserResponseToDTOMapper mapper;
+
     @GetMapping
-    public List<UserResponse> getAllUsers(@RequestParam Optional<Long> roleId, @RequestParam Optional<Long> departmentId){
-        return userService.getAllUsersWithParam(roleId, departmentId);
+    public ResponseEntity<List<UserResponse>> getAllUsers(Pageable pageable) {
+        List<UserResponseDTO> userList = userService.getAllUsers(pageable);
+        List<UserResponse> result = mapper.toResponseList(userList);
+        return ResponseEntity.ok(result);
     }
-    @GetMapping("/{userId}")
-    public User getUserById(@PathVariable Long userId){
-        return userService.getUserById(userId);
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
+        UserResponseDTO userDTO = userService.getUserById(id);
+        UserResponse result = mapper.toResponse(userDTO);
+        return ResponseEntity.ok(result);
     }
+
     @PostMapping
-    public User createUser(@RequestBody UserCreateRequest userCreateRequest){
-        return userService.createUser(userCreateRequest);
+    public ResponseEntity<UserResponse> createUser(@RequestBody UserCreateRequest userCreateRequest) {
+        UserCreateRequestDTO requestDTO = mapper.toDTO(userCreateRequest);
+        UserResponseDTO responseDTO = userService.createUser(requestDTO);
+        UserResponse result = mapper.toResponse(responseDTO);
+        return ResponseEntity.ok(result);
     }
-    @PutMapping("/{userId}")
-    public User updateUserById(@PathVariable Long userId, @RequestBody UserUpdateRequest userUpdateRequest){
-        return userService.updateUserById(userId, userUpdateRequest);
+
+    @PutMapping
+    public ResponseEntity<UserResponse> updateUser(@RequestBody UserUpdateRequest userUpdateRequest) {
+        UserUpdateRequestDTO requestDTO = mapper.toDTO(userUpdateRequest);
+        UserResponseDTO responseDTO = userService.updateUser(requestDTO);
+        UserResponse result = mapper.toResponse(responseDTO);
+        return ResponseEntity.ok(result);
     }
-    @DeleteMapping("/{userId}")
-    public void deleteUserById(@PathVariable Long userId){
-        userService.deleteUserById(userId);
+
+    @DeleteMapping("/{ids}")
+    public void deleteUsers(@PathVariable List<Long> ids) {
+        userService.deleteUsersByIds(ids);
     }
 }

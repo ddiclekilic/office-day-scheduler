@@ -1,6 +1,5 @@
 package com.base.ods.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -12,14 +11,12 @@ import javax.persistence.*;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "calendar")
 public class Calendar {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     //ondelete action
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonIgnore
     User user;
     @Column(nullable = false)
     String dateMonth;

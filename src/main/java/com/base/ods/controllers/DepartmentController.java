@@ -1,11 +1,17 @@
 package com.base.ods.controllers;
 
+
+import com.base.ods.controllers.requests.DepartmentCreateRequest;
+import com.base.ods.controllers.requests.DepartmentUpdateRequest;
+import com.base.ods.controllers.responses.DepartmentResponse;
 import com.base.ods.domain.Department;
-import com.base.ods.requests.DepartmentRequest;
-import com.base.ods.responses.DepartmentResponse;
+import com.base.ods.mapper.DepartmentResponseToDTOMapper;
 import com.base.ods.services.IDepartmentService;
+import com.base.ods.services.requests.DepartmentCreateRequestDTO;
+import com.base.ods.services.requests.DepartmentUpdateRequestDTO;
+import com.base.ods.services.responses.DepartmentResponseDTO;
 import lombok.AllArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,29 +21,35 @@ import java.util.List;
 @AllArgsConstructor
 public class DepartmentController {
     private IDepartmentService departmentService;
-
+    private DepartmentResponseToDTOMapper mapper;
     @GetMapping
-    public List<DepartmentResponse> getAllDepartments() {
-        return departmentService.getAllDepartments();
+    public ResponseEntity<List<DepartmentResponse>> getAllDepartments() {
+        List<DepartmentResponseDTO> departmentList = departmentService.getAllDepartments();
+        List<DepartmentResponse> result = mapper.toResponseList(departmentList);
+        return ResponseEntity.ok(result);
     }
-
-    @GetMapping("/{departmentId}")
-    public Department getDepartmentById(@PathVariable Long departmentId) {
-        return departmentService.getDepartmentById(departmentId);
+    @GetMapping("/{id}")
+    public ResponseEntity<DepartmentResponse> getDepartmentById(@PathVariable Long id) {
+        DepartmentResponseDTO departmentDTO = departmentService.getDepartmentById(id);
+        DepartmentResponse result = mapper.toResponse(departmentDTO);
+        return ResponseEntity.ok(result);
     }
-
     @PostMapping
-    public Department createDepartment(@RequestBody DepartmentRequest departmentRequest) {
-        return departmentService.createDepartment(departmentRequest);
+    public ResponseEntity<DepartmentResponse> createDepartment(@RequestBody DepartmentCreateRequest departmentCreateRequest) {
+        DepartmentCreateRequestDTO requestDTO = mapper.toDTO(departmentCreateRequest);
+        DepartmentResponseDTO responseDTO = departmentService.createDepartment(requestDTO);
+        DepartmentResponse result = mapper.toResponse(responseDTO);
+        return ResponseEntity.ok(result);
     }
-
-    @PutMapping("/{departmentId}")
-    public Department updateDepartmentById(@PathVariable Long departmentId, @RequestBody DepartmentRequest departmentRequest) {
-        return departmentService.updateDepartmentById(departmentId, departmentRequest);
+    @PutMapping
+    public ResponseEntity<DepartmentResponse> updateDepartment(@RequestBody DepartmentUpdateRequest departmentUpdateRequest) {
+        DepartmentUpdateRequestDTO requestDTO = mapper.toDTO(departmentUpdateRequest);
+        DepartmentResponseDTO responseDTO = departmentService.updateDepartment(requestDTO);
+        DepartmentResponse result = mapper.toResponse(responseDTO);
+        return ResponseEntity.ok(result);
     }
-
     @DeleteMapping("/{ids}")
-    public void deleteDepartmentsByIds(@PathVariable List<Long> ids) {
+    public void deleteDepartments(@PathVariable List<Long> ids) {
         departmentService.deleteDepartmentsByIds(ids);
     }
 }

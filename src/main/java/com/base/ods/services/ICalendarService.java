@@ -1,16 +1,19 @@
 package com.base.ods.services;
 
-import com.base.ods.domain.Calendar;
-import com.base.ods.requests.CalendarCreateRequest;
-import com.base.ods.requests.CalendarUpdateRequest;
+import com.base.ods.services.requests.CalendarCreateRequestDTO;
+import com.base.ods.services.requests.CalendarUpdateRequestDTO;
+import com.base.ods.services.responses.CalendarResponseDTO;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ICalendarService {
-    List<Calendar> getAllCalendars(Optional<Long> userId, Optional<String> dateMonth, Optional<String> dateYear);
-    Calendar getCalendarById(Long calendarId);
-    Calendar createCalendar(CalendarCreateRequest calendarCreateRequest);
-    Calendar updateCalendarById(Long calendarId, CalendarUpdateRequest calendarUpdateRequest);
-    void deleteCalendarById(Long calendarId);
+    List<CalendarResponseDTO> getAllCalendars();
+
+    CalendarResponseDTO getCalendarById(Long id);
+
+    CalendarResponseDTO createCalendar(CalendarCreateRequestDTO calendarCreateRequestDTO);
+
+    CalendarResponseDTO updateCalendar(CalendarUpdateRequestDTO calendarUpdateRequestDTO);
+
+    void deleteCalendarsByIds(List<Long> ids);
 }

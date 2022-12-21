@@ -10,4 +10,5 @@ import java.util.List;
 public interface CalendarRepository extends JpaRepository<Calendar, Long> {
     List<Calendar> findByUserId(Long userId);
     List<Calendar> findByDateMonthAndDateYear(String dateMonth, String dateYear);
+    void deleteByIdIn(List<Long> ids);
 }

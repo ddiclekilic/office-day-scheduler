@@ -2,17 +2,22 @@ package com.base.ods.services.impl;
 
 import com.base.ods.domain.Schedule;
 import com.base.ods.domain.User;
+import com.base.ods.exception.ResourceNotFoundException;
+import com.base.ods.mapper.ScheduleEntityToDTOMapper;
+import com.base.ods.mapper.UserEntityToDTOMapper;
 import com.base.ods.repository.ScheduleRepository;
-import com.base.ods.requests.ScheduleCreateRequest;
-import com.base.ods.requests.ScheduleUpdateRequest;
 import com.base.ods.services.IScheduleService;
 import com.base.ods.services.IUserService;
+import com.base.ods.services.requests.ScheduleCreateRequestDTO;
+import com.base.ods.services.requests.ScheduleUpdateRequestDTO;
+import com.base.ods.services.responses.ScheduleResponseDTO;
+import com.base.ods.services.responses.UserResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -20,74 +25,52 @@ import java.util.Optional;
 public class ScheduleServiceImpl implements IScheduleService {
     private ScheduleRepository scheduleRepository;
     private IUserService userService;
+    private ScheduleEntityToDTOMapper mapper;
+    private UserEntityToDTOMapper userMapper;
 
     @Override
-    public List<Schedule> getAllSchedules(Optional<Long> userId, Optional<String> dateMonth, Optional<String> dateYear) {
-        if (userId.isPresent())
-            return scheduleRepository.findByUserId(userId.get());
-        else if (dateMonth.isPresent() && dateYear.isPresent())
-            return scheduleRepository.findByDateMonthAndDateYear(dateMonth.get(), dateYear.get());
-        return scheduleRepository.findAll();
+    public List<ScheduleResponseDTO> getAllSchedules() {
+        List<Schedule> scheduleList = scheduleRepository.findAll();
+        return mapper.toDTOList(scheduleList);
     }
 
     @Override
-    public Schedule getScheduleById(Long scheduleId) {
-        Schedule schedule = scheduleRepository.findById(scheduleId).orElse(null);
-        if (schedule != null)
-            return schedule;
-        else {
-            log.warn("Schedule not found by given {} id number.", scheduleId);
-            return null;
-        }
+    public ScheduleResponseDTO getScheduleById(Long id) {
+        Schedule schedule = scheduleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Schedule Not Found"));
+        return mapper.toDTO(schedule);
     }
 
     @Override
-    public Schedule createSchedule(ScheduleCreateRequest scheduleCreateRequest) {
-        User user = userService.getUserById(scheduleCreateRequest.getUserId());
+    public ScheduleResponseDTO createSchedule(ScheduleCreateRequestDTO scheduleCreateRequestDTO) {
+        UserResponseDTO responseDTO = userService.getUserById(scheduleCreateRequestDTO.getUserId());
+        User user = userMapper.responseDTOToEntity(responseDTO);
+        //User user=userRepository.findById(calendarCreateRequestDTO.getUserId()).orElseThrow(()->new ResourceNotFoundException("User Not Found"));;
         if (user != null) {
-            Schedule toSave = new Schedule();
-            toSave.setDateMonth(scheduleCreateRequest.getDateMonth());
-            toSave.setOfficeDay(scheduleCreateRequest.getOfficeDay());
-            toSave.setDateYear(scheduleCreateRequest.getDateYear());
-            toSave.setVacation(scheduleCreateRequest.getVacation());
-            toSave.setTotalDay(scheduleCreateRequest.getTotalDay());
-            toSave.setWorkFromHome(scheduleCreateRequest.getWorkFromHome());
-            toSave.setReport(scheduleCreateRequest.getReport());
+            Schedule toSave = mapper.toEntity(scheduleCreateRequestDTO);
             toSave.setUser(user);
-            return scheduleRepository.save(toSave);
+            Schedule newSchedule = scheduleRepository.save(toSave);
+            return mapper.toDTO(newSchedule);
         } else
             return null;
     }
 
     @Override
-    public Schedule updateScheduleById(Long scheduleId, ScheduleUpdateRequest scheduleUpdateRequest) {
-        Optional<Schedule> schedule = scheduleRepository.findById(scheduleId);
-        if (schedule.isPresent()) {
-            Schedule toUpdate = schedule.get();
-            toUpdate.setDateYear(scheduleUpdateRequest.getDateYear());
-            toUpdate.setDateMonth(scheduleUpdateRequest.getDateMonth());
-            toUpdate.setVacation(scheduleUpdateRequest.getVacation());
-            toUpdate.setReport(scheduleUpdateRequest.getReport());
-            toUpdate.setOfficeDay(scheduleUpdateRequest.getOfficeDay());
-            toUpdate.setWorkFromHome(scheduleUpdateRequest.getWorkFromHome());
-            toUpdate.setTotalDay(scheduleUpdateRequest.getTotalDay());
-            scheduleRepository.save(toUpdate);
-            log.info("Schedule with id {} updated.", toUpdate.getId());
-            return toUpdate;
-        } else {
-            log.warn("There is no schedule information in the database with {} id number.", scheduleId);
+    public ScheduleResponseDTO updateSchedule(ScheduleUpdateRequestDTO scheduleUpdateRequestDTO) {
+        Schedule schedule = scheduleRepository.findById(scheduleUpdateRequestDTO.getId()).orElseThrow(() -> new ResourceNotFoundException("Schedule Not Found"));
+        if (schedule != null) {
+            UserResponseDTO userResponseDTO = userService.getUserById(schedule.getUser().getId());
+            User user = userMapper.responseDTOToEntity(userResponseDTO);
+            Schedule toUpdate = mapper.toEntity(scheduleUpdateRequestDTO);
+            toUpdate.setUser(user);
+            Schedule result = scheduleRepository.save(toUpdate);
+            return mapper.toDTO(result);
+        } else
             return null;
-        }
     }
 
     @Override
-    public void deleteScheduleById(Long scheduleId) {
-        Optional<Schedule> schedule = scheduleRepository.findById(scheduleId);
-        if (schedule.isPresent()) {
-            scheduleRepository.deleteById(schedule.get().getId());
-            log.info("Schedule with id number {} deleted", scheduleId);
-        } else
-            log.warn("There is no schedule information in the database with {} id number.", scheduleId);
+    @Transactional
+    public void deleteSchedulesByIds(List<Long> ids) {
+        scheduleRepository.deleteByIdIn(ids);
     }
-
 }

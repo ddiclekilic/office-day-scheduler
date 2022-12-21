@@ -1,40 +1,59 @@
 package com.base.ods.controllers;
 
-import com.base.ods.domain.Schedule;
-import com.base.ods.requests.ScheduleCreateRequest;
-import com.base.ods.requests.ScheduleUpdateRequest;
+
+import com.base.ods.controllers.requests.ScheduleCreateRequest;
+import com.base.ods.controllers.requests.ScheduleUpdateRequest;
+import com.base.ods.controllers.responses.ScheduleResponse;
+import com.base.ods.mapper.ScheduleResponseToDTOMapper;
 import com.base.ods.services.IScheduleService;
+import com.base.ods.services.requests.ScheduleCreateRequestDTO;
+import com.base.ods.services.requests.ScheduleUpdateRequestDTO;
+import com.base.ods.services.responses.ScheduleResponseDTO;
 import lombok.AllArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/schedule")
 @AllArgsConstructor
 public class ScheduleController {
     private IScheduleService scheduleService;
+    private ScheduleResponseToDTOMapper mapper;
+
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('MANAGER','SUPER_USER')")
-    public List<Schedule> getAllSchedules(@RequestParam Optional<Long> userId,@RequestParam Optional<String> dateMonth,@RequestParam Optional<String> dateYear){
-        return scheduleService.getAllSchedules(userId, dateMonth, dateYear);
+    public ResponseEntity<List<ScheduleResponse>> getAllSchedules() {
+        List<ScheduleResponseDTO> responseDTO = scheduleService.getAllSchedules();
+        List<ScheduleResponse> result = mapper.toResponseList(responseDTO);
+        return ResponseEntity.ok(result);
     }
-    @GetMapping("/{scheduleId}")
-    public Schedule getScheduleById(@PathVariable Long scheduleId){
-        return scheduleService.getScheduleById(scheduleId);
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ScheduleResponse> getScheduleById(@PathVariable Long id) {
+        ScheduleResponseDTO responseDTO = scheduleService.getScheduleById(id);
+        ScheduleResponse result = mapper.toResponse(responseDTO);
+        return ResponseEntity.ok(result);
     }
+
     @PostMapping
-    public Schedule createSchedule(@RequestBody ScheduleCreateRequest scheduleCreateRequest){
-        return scheduleService.createSchedule(scheduleCreateRequest);
+    public ResponseEntity<ScheduleResponse> createSchedule(@RequestBody ScheduleCreateRequest scheduleCreateRequest) {
+        ScheduleCreateRequestDTO requestDTO = mapper.toDTO(scheduleCreateRequest);
+        ScheduleResponseDTO responseDTO = scheduleService.createSchedule(requestDTO);
+        ScheduleResponse result = mapper.toResponse(responseDTO);
+        return ResponseEntity.ok(result);
     }
-    @PutMapping("/{scheduleId}")
-    public Schedule updateScheduleById(@PathVariable Long scheduleId, @RequestBody ScheduleUpdateRequest scheduleUpdateRequest){
-        return scheduleService.updateScheduleById(scheduleId, scheduleUpdateRequest);
+
+    @PutMapping
+    public ResponseEntity<ScheduleResponse> updateSchedule(@RequestBody ScheduleUpdateRequest scheduleUpdateRequest) {
+        ScheduleUpdateRequestDTO requestDTO = mapper.toDTO(scheduleUpdateRequest);
+        ScheduleResponseDTO responseDTO = scheduleService.updateSchedule(requestDTO);
+        ScheduleResponse result = mapper.toResponse(responseDTO);
+        return ResponseEntity.ok(result);
     }
-    @DeleteMapping("/{scheduleId}")
-    public void deleteScheduleById(@PathVariable Long scheduleId){
-        scheduleService.deleteScheduleById(scheduleId);
+
+    @DeleteMapping("/{ids}")
+    public void deleteScheduleById(@PathVariable List<Long> ids) {
+        scheduleService.deleteSchedulesByIds(ids);
     }
 }

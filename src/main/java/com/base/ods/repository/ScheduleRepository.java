@@ -10,4 +10,5 @@ import java.util.List;
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     List<Schedule> findByUserId(Long userId);
     List<Schedule> findByDateMonthAndDateYear(String dateMonth, String dateYear);
+    void deleteByIdIn(List<Long> ids);
 }

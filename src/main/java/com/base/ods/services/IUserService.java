@@ -1,18 +1,24 @@
 package com.base.ods.services;
 
 import com.base.ods.domain.User;
-import com.base.ods.requests.UserCreateRequest;
-import com.base.ods.requests.UserUpdateRequest;
-import com.base.ods.responses.UserResponse;
+import com.base.ods.services.requests.UserCreateRequestDTO;
+import com.base.ods.services.requests.UserUpdateRequestDTO;
+import com.base.ods.services.responses.UserResponseDTO;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
-import java.util.Optional;
 
 public interface IUserService {
-    List<UserResponse> getAllUsersWithParam(Optional<Long> roleId, Optional<Long> departmentId);
-    User getUserById(Long userId);
-    User createUser(UserCreateRequest userCreateRequest);
-    User updateUserById(Long userId, UserUpdateRequest userUpdateRequest);
-    void deleteUserById(Long userId);
+    List<UserResponseDTO> getAllUsers(Pageable pageable);
+
+    UserResponseDTO getUserById(Long id);
+
+    UserResponseDTO createUser(UserCreateRequestDTO userCreateRequestDTO);
+
+    UserResponseDTO updateUser(UserUpdateRequestDTO userUpdateRequestDTO);
+
+    void deleteUsersByIds(List<Long> ids);
+
     User getUserByEmail(String email);
+
 }

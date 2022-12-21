@@ -1,21 +1,31 @@
 package com.base.ods.services.impl;
 
 import com.base.ods.domain.*;
+import com.base.ods.exception.ResourceNotFoundException;
+import com.base.ods.mapper.DepartmentEntityToDTOMapper;
+import com.base.ods.mapper.RoleEntityToDTOMapper;
+import com.base.ods.mapper.UserEntityToDTOMapper;
+import com.base.ods.mapper.ZoneEntityToDTOMapper;
 import com.base.ods.repository.UserRepository;
-import com.base.ods.requests.UserCreateRequest;
-import com.base.ods.requests.UserUpdateRequest;
-import com.base.ods.responses.UserResponse;
-import com.base.ods.services.IDepartmentService;
 import com.base.ods.services.IRoleService;
 import com.base.ods.services.IUserService;
+import com.base.ods.services.requests.UserCreateRequestDTO;
+import com.base.ods.services.requests.UserUpdateRequestDTO;
+import com.base.ods.services.responses.DepartmentResponseDTO;
+import com.base.ods.services.responses.RoleResponseDTO;
+import com.base.ods.services.responses.UserResponseDTO;
+import com.base.ods.services.IDepartmentService;
 import com.base.ods.services.IZoneService;
+import com.base.ods.services.responses.ZoneResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -25,84 +35,91 @@ public class UserServiceImpl implements IUserService {
     private IDepartmentService departmentService;
     private IZoneService zoneService;
     private IRoleService roleService;
+    private PasswordEncoder passwordEncoder;
+    private UserEntityToDTOMapper mapper;
+    private ZoneEntityToDTOMapper zoneMapper;
+    private RoleEntityToDTOMapper roleMapper;
+    private DepartmentEntityToDTOMapper departmentMapper;
 
     @Override
-    public List<UserResponse> getAllUsersWithParam(Optional<Long> roleId, Optional<Long> departmentId) {
-        List<User> list;
-        if (roleId.isPresent())
-            list = userRepository.findByRoleId(roleId.get());
-        else if (departmentId.isPresent())
-            list = userRepository.findByDepartmentId(departmentId.get());
-        else
-            list = userRepository.findAll();
-        return list.stream().map(u -> new UserResponse(u)).collect(Collectors.toList());
-    }
-
-    @Override
-    public User getUserById(Long userId) {
-        User user = userRepository.findById(userId).orElse(null);
-        if (user != null)
-            return user;
-        else {
-            log.warn("User not found by given {} id number.", userId);
-            return null;
+    public List<UserResponseDTO> getAllUsers(Pageable pageable) {
+        Page<User> userList = userRepository.findAll(pageable);
+        List<UserResponseDTO> responseDTO=mapper.convert(userList);
+        for(UserResponseDTO user:responseDTO){
+            DepartmentResponseDTO departmentDTO = departmentService.getDepartmentById(user.getDepartmentId());
+            user.setDepartmentManagerId(departmentDTO.getDepartmentManagerId());
+            user.setDepartmentManagerFirstName(departmentDTO.getDepartmentManagerFirstName());
+            user.setDepartmentManagerLastName(departmentDTO.getDepartmentManagerLastName());
+            user.setGroupManagerId(departmentDTO.getGroupManagerId());
+            user.setGroupManagerFirstName(departmentDTO.getGroupManagerFirstName());
+            user.setGroupManagerLastName(departmentDTO.getGroupManagerLastName());
         }
+        return responseDTO;
     }
 
     @Override
-    public User createUser(UserCreateRequest userCreateRequest) {
-        Department department = departmentService.getDepartmentById(userCreateRequest.getDepartmentId());
-        Zone zone = zoneService.getZoneById(userCreateRequest.getZoneId());
-        Role role = roleService.getRoleById(userCreateRequest.getRoleId());
-        if (department != null && zone != null && role != null) {
-            User toSave = new User();
-            toSave.setFirstName(userCreateRequest.getFirstName());
-            toSave.setLastName(userCreateRequest.getLastName());
-            toSave.setRegistrationNumber(userCreateRequest.getRegistrationNumber());
-            toSave.setEmail(userCreateRequest.getEmail());
-            toSave.setPassword(userCreateRequest.getPassword());
-            toSave.setTransportChoice(userCreateRequest.getTransportChoice());
-            toSave.setDepartment(department);
+    public UserResponseDTO getUserById(Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User Not Found"));
+        UserResponseDTO responseDTO = mapper.toDTO(user);
+        /*DepartmentResponseDTO departmentDTO = departmentService.getDepartmentById(user.getDepartment().getId());
+        responseDTO.setDepartmentManagerFirstName(departmentDTO.getDepartmentManagerFirstName());
+        responseDTO.setDepartmentManagerLastName(departmentDTO.getDepartmentManagerLastName());
+        responseDTO.setGroupManagerFirstName(departmentDTO.getGroupManagerFirstName());
+        responseDTO.setGroupManagerLastName(departmentDTO.getGroupManagerLastName());*/
+        return responseDTO;
+    }
+
+    @Override
+    public UserResponseDTO createUser(UserCreateRequestDTO userCreateRequestDTO) {
+        RoleResponseDTO roleDTO = roleService.getRoleById(userCreateRequestDTO.getRoleId());
+        Role role = roleMapper.responseDTOToEntity(roleDTO);
+        ZoneResponseDTO zoneDTO = zoneService.getZoneById(userCreateRequestDTO.getZoneId());
+        Zone zone = zoneMapper.responseDTOToEntity(zoneDTO);
+        /*DepartmentResponseDTO departmentDTO = departmentService.getDepartmentById(userCreateRequestDTO.getDepartmentId());
+        User groupManager = userRepository.findById(departmentDTO.getGroupManagerId()).orElseThrow(() -> new ResourceNotFoundException("User Not Found"));
+        User departmentManager = userRepository.findById(departmentDTO.getDepartmentManagerId()).orElseThrow(() -> new ResourceNotFoundException("User Not Found"));*/
+        if (role != null && zone != null /*&& department != null*/) {
+            User toSave = mapper.toEntity(userCreateRequestDTO);
             toSave.setRole(role);
             toSave.setZone(zone);
-            return userRepository.save(toSave);
+            //toSave.setDepartment(department);
+            //user.setPassword(passwordEncoder.encode(userRequestDTO.getPassword())); //update
+            User newUser = userRepository.save(toSave);
+            UserResponseDTO result = mapper.toDTO(newUser);
+            /*result.setDepartmentManagerFirstName(departmentManager.getFirstName());
+            result.setDepartmentManagerLastName(departmentManager.getLastName());
+            result.setGroupManagerFirstName(groupManager.getFirstName());
+            result.setGroupManagerLastName(groupManager.getLastName());*/
+            return result;
         } else
             return null;
     }
 
     @Override
-    public User updateUserById(Long userId, UserUpdateRequest userUpdateRequest) {
-        Optional<User> user = userRepository.findById(userId);
-        Department department = departmentService.getDepartmentById(userUpdateRequest.getDepartmentId());
-        Zone zone = zoneService.getZoneById(userUpdateRequest.getZoneId());
-        Role role = roleService.getRoleById(userUpdateRequest.getRoleId());
-        if (user.isPresent() && department != null && zone != null && role != null) {
-            User toUpdate = user.get();
-            toUpdate.setEmail(userUpdateRequest.getEmail());
-            toUpdate.setPassword(userUpdateRequest.getPassword());
-            toUpdate.setFirstName(userUpdateRequest.getFirstName());
-            toUpdate.setLastName(userUpdateRequest.getLastName());
-            toUpdate.setTransportChoice(userUpdateRequest.getTransportChoice());
-            toUpdate.setRole(role);
-            toUpdate.setZone(zone);
-            toUpdate.setDepartment(department);
-            userRepository.save(toUpdate);
-            log.info("User with id {} updated.", toUpdate.getId());
-            return toUpdate;
-        } else {
-            log.warn("There is no user information in the database with {} id number.", userId);
-            return null;
+    public UserResponseDTO updateUser(UserUpdateRequestDTO userUpdateRequestDTO) {
+        RoleResponseDTO roleDTO = roleService.getRoleById(userUpdateRequestDTO.getRoleId());
+        Role role = roleMapper.responseDTOToEntity(roleDTO);
+        ZoneResponseDTO zoneDTO = zoneService.getZoneById(userUpdateRequestDTO.getZoneId());
+        Zone zone = zoneMapper.responseDTOToEntity(zoneDTO);
+        DepartmentResponseDTO departmentDTO = departmentService.getDepartmentById(userUpdateRequestDTO.getDepartmentId());
+        Department department = departmentMapper.responseDTOToEntity(departmentDTO);
+        User user = userRepository.findById(userUpdateRequestDTO.getId()).orElseThrow(() -> new ResourceNotFoundException("User Not Found"));
+        if (user != null && role!=null && zone!=null && department != null) {
+            User toSave = mapper.toEntity(userUpdateRequestDTO);
+            toSave.setRole(role);
+            toSave.setZone(zone);
+            toSave.setDepartment(department);
+            toSave.setRegistrationNumber(user.getRegistrationNumber());
+            User result = userRepository.save(toSave);
+            return mapper.toDTO(result);
         }
+        return null;
     }
 
     @Override
-    public void deleteUserById(Long userId) {
-        Optional<User> user = userRepository.findById(userId);
-        if (user.isPresent()) {
-            userRepository.deleteById(user.get().getId());
-            log.info("User with id number {} deleted", userId);
-        } else
-            log.warn("There is no user information in the database with {} id number.", userId);
+    @Transactional
+    public void deleteUsersByIds(List<Long> ids) {
+        userRepository.deleteByIdIn(ids);
     }
 
     @Override

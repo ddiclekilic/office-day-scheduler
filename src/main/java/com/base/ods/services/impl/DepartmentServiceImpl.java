@@ -1,13 +1,16 @@
 package com.base.ods.services.impl;
 
 import com.base.ods.domain.Department;
-import com.base.ods.domain.User;
+import com.base.ods.exception.ResourceNotFoundException;
+import com.base.ods.mapper.DepartmentEntityToDTOMapper;
+import com.base.ods.mapper.UserEntityToDTOMapper;
 import com.base.ods.repository.DepartmentRepository;
-import com.base.ods.requests.DepartmentRequest;
-import com.base.ods.responses.DepartmentResponse;
-import com.base.ods.responses.UserResponse;
-import com.base.ods.services.IDepartmentService;
 import com.base.ods.services.IUserService;
+import com.base.ods.services.IDepartmentService;
+import com.base.ods.services.requests.DepartmentCreateRequestDTO;
+import com.base.ods.services.requests.DepartmentUpdateRequestDTO;
+import com.base.ods.services.responses.DepartmentResponseDTO;
+import com.base.ods.services.responses.UserResponseDTO;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -15,70 +18,83 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Log4j2
 public class DepartmentServiceImpl implements IDepartmentService {
     private DepartmentRepository departmentRepository;
     private IUserService userService;
+    private DepartmentEntityToDTOMapper mapper;
+    private UserEntityToDTOMapper userMapper;
 
-    public DepartmentServiceImpl(DepartmentRepository departmentRepository, @Lazy IUserService userService) {
+    public DepartmentServiceImpl(DepartmentRepository departmentRepository, @Lazy IUserService userService, DepartmentEntityToDTOMapper mapper) {
         this.departmentRepository = departmentRepository;
         this.userService = userService;
+        this.mapper = mapper;
     }
 
-    @Override
-    public List<DepartmentResponse> getAllDepartments() {
-        List<Department> list=departmentRepository.findAll();
-        return list.stream().map(d -> new DepartmentResponse(d)).collect(Collectors.toList());
-        //return departmentRepository.findAll();
-    }
 
     @Override
-    public Department getDepartmentById(Long departmentId) {
-        Department department = departmentRepository.findById(departmentId).orElse(null);
-        if (department != null)
-            return department;
-        else {
-            log.warn("Department not found by given {} id number.", departmentId);
-            return null;
+    public List<DepartmentResponseDTO> getAllDepartments() {
+        List<Department> departmentList = departmentRepository.findAll();
+        List<DepartmentResponseDTO> responseDTO = mapper.toDTOList(departmentList);
+        for (DepartmentResponseDTO department : responseDTO) {
+            UserResponseDTO departmentManager = userService.getUserById(department.getDepartmentManagerId());
+            UserResponseDTO groupManager = userService.getUserById(department.getGroupManagerId());
+            department.setDepartmentManagerFirstName(departmentManager.getFirstName());
+            department.setDepartmentManagerLastName(departmentManager.getLastName());
+            department.setGroupManagerFirstName(groupManager.getFirstName());
+            department.setGroupManagerLastName(groupManager.getLastName());
         }
+        return responseDTO;
     }
 
     @Override
-    public Department createDepartment(DepartmentRequest departmentCreateRequest) {
-        User departmentManager = userService.getUserById(departmentCreateRequest.getDepartmentManagerId());
-        User groupManager = userService.getUserById(departmentCreateRequest.getGroupManagerId());
-        if (departmentManager != null && groupManager != null) {
-            Department toSave = new Department();
-            toSave.setDepartmentCode(departmentCreateRequest.getDepartmentCode());
-            toSave.setGroupCode(departmentCreateRequest.getGroupCode());
-            toSave.setDepartmentManager(departmentManager);
-            toSave.setGroupManager(groupManager);
-            return departmentRepository.save(toSave);
+    public DepartmentResponseDTO getDepartmentById(Long id) {
+        Department department = departmentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Department Not Found"));
+        DepartmentResponseDTO responseDTO = mapper.toDTO(department);
+        UserResponseDTO groupManager = userService.getUserById(department.getGroupManagerId());
+        UserResponseDTO departmentManager = userService.getUserById(department.getDepartmentManagerId());
+        responseDTO.setDepartmentManagerFirstName(departmentManager.getFirstName());
+        responseDTO.setDepartmentManagerLastName(departmentManager.getLastName());
+        responseDTO.setGroupManagerFirstName(groupManager.getFirstName());
+        responseDTO.setGroupManagerLastName(groupManager.getLastName());
+        return responseDTO;
+    }
+
+    @Override
+    public DepartmentResponseDTO createDepartment(DepartmentCreateRequestDTO departmentCreateRequestDTO) {
+        UserResponseDTO groupManager = userService.getUserById(departmentCreateRequestDTO.getGroupManagerId());
+        UserResponseDTO departmentManager = userService.getUserById(departmentCreateRequestDTO.getDepartmentManagerId());
+        if (groupManager != null && departmentManager != null) {
+            Department toSave = mapper.toEntity(departmentCreateRequestDTO);
+            Department newDepartment = departmentRepository.save(toSave);
+            DepartmentResponseDTO result = mapper.toDTO(newDepartment);
+            result.setDepartmentManagerFirstName(departmentManager.getFirstName());
+            result.setDepartmentManagerLastName(departmentManager.getLastName());
+            result.setGroupManagerFirstName(groupManager.getFirstName());
+            result.setGroupManagerLastName(groupManager.getLastName());
+            return result;
         } else
             return null;
     }
 
     @Override
-    public Department updateDepartmentById(Long departmentId, DepartmentRequest departmentUpdateRequest) {
-        Optional<Department> department = departmentRepository.findById(departmentId);
-        User departmentManager = userService.getUserById(departmentUpdateRequest.getDepartmentManagerId());
-        User groupManager = userService.getUserById(departmentUpdateRequest.getGroupManagerId());
-        if (department.isPresent() && departmentManager != null && groupManager != null) {
-            Department toUpdate = department.get();
-            toUpdate.setDepartmentCode(departmentUpdateRequest.getDepartmentCode());
-            toUpdate.setGroupCode(departmentUpdateRequest.getGroupCode());
-            toUpdate.setDepartmentManager(departmentManager);
-            toUpdate.setGroupManager(groupManager);
-            departmentRepository.save(toUpdate);
-            log.info("Department with id {} updated.", toUpdate.getId());
-            return toUpdate;
-        } else {
-            log.warn("There is no department information in the database with {} id number.", departmentId);
+    public DepartmentResponseDTO updateDepartment(DepartmentUpdateRequestDTO departmentUpdateRequestDTO) {
+        Department department = departmentRepository.findById(departmentUpdateRequestDTO.getId()).orElseThrow(() -> new ResourceNotFoundException("Department Not Found"));
+        UserResponseDTO groupManager = userService.getUserById(departmentUpdateRequestDTO.getGroupManagerId());
+        UserResponseDTO departmentManager = userService.getUserById(departmentUpdateRequestDTO.getDepartmentManagerId());
+        if (department != null && groupManager != null && departmentManager != null) {
+            Department toUpdate = mapper.toEntity(departmentUpdateRequestDTO);
+            Department newDepartment = departmentRepository.save(toUpdate);
+            DepartmentResponseDTO result = mapper.toDTO(newDepartment);
+            result.setDepartmentManagerFirstName(departmentManager.getFirstName());
+            result.setDepartmentManagerLastName(departmentManager.getLastName());
+            result.setGroupManagerFirstName(groupManager.getFirstName());
+            result.setGroupManagerLastName(groupManager.getLastName());
+            return result;
+        } else
             return null;
-        }
     }
 
     @Override

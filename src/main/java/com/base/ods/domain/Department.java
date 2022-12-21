@@ -15,17 +15,12 @@ public class Department {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     String departmentCode;
-    @Column(nullable = false) //unique
+    @Column(nullable = false, unique = true)
     String groupCode;
-    //ondelete action
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "department_manager_id", unique = true) // unique???? nullable = false kaldirildi
-    @JsonIgnore
-    User departmentManager;
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "group_manager_id", unique = true) //nullable = false kaldirildi
-    @JsonIgnore
-    User groupManager;
+    @Column(nullable = false)
+    Long departmentManagerId;
+    @Column(nullable = false)
+    Long groupManagerId;
 }

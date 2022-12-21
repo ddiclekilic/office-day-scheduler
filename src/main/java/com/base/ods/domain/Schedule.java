@@ -1,6 +1,6 @@
 package com.base.ods.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -16,11 +16,9 @@ public class Schedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     //ondelete action
-    @ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="user_id", nullable = false)
-    @JsonIgnore
     User user;
-    //Long userId;
     @Column(nullable = false)
     double officeDay;
     @Column(nullable = false)

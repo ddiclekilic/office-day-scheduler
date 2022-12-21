@@ -1,10 +1,18 @@
 package com.base.ods.controllers;
 
-import com.base.ods.domain.OutOfOfficeDay;
+import com.base.ods.controllers.requests.OutOfOfficeDayCreateRequest;
+import com.base.ods.controllers.requests.OutOfOfficeDayUpdateRequest;
+import com.base.ods.controllers.responses.OutOfOfficeDayResponse;
+import com.base.ods.mapper.OutOfOfficeDayResponseToDTOMapper;
 import com.base.ods.services.IOutOfOfficeDayService;
+import com.base.ods.services.requests.OutOfOfficeDayCreateRequestDTO;
+import com.base.ods.services.requests.OutOfOfficeDayUpdateRequestDTO;
+import com.base.ods.services.responses.OutOfOfficeDayResponseDTO;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -13,28 +21,40 @@ import java.util.List;
 public class OutOfOfficeDayController {
     private IOutOfOfficeDayService outOfOfficeDayService;
 
+    private OutOfOfficeDayResponseToDTOMapper mapper;
+
     @GetMapping
-    public List<OutOfOfficeDay> getAllOutOfOfficeDays() {
-        return outOfOfficeDayService.getAllOutOfOfficeDays();
+    public ResponseEntity<List<OutOfOfficeDayResponse>> getAllOutOfOfficeDays() {
+        List<OutOfOfficeDayResponseDTO> officeDayList = outOfOfficeDayService.getAllOutOfOfficeDays();
+        List<OutOfOfficeDayResponse> result = mapper.toResponseList(officeDayList);
+        return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/{outOfOfficeDayId}")
-    public OutOfOfficeDay getOutOfOfficeDayById(@PathVariable Long outOfOfficeDayId) {
-        return outOfOfficeDayService.getOutOfOfficeDayById(outOfOfficeDayId);
+    @GetMapping("/{id}")
+    public ResponseEntity<OutOfOfficeDayResponse> getOutOfOfficeDayById(@PathVariable Long id) {
+        OutOfOfficeDayResponseDTO responseDTO = outOfOfficeDayService.getOutOfOfficeDayById(id);
+        OutOfOfficeDayResponse result = mapper.toResponse(responseDTO);
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping
-    public OutOfOfficeDay createOutOfOfficeDay(@RequestBody OutOfOfficeDay outOfOfficeDay) {
-        return outOfOfficeDayService.createOutOfOfficeDay(outOfOfficeDay);
+    public ResponseEntity<OutOfOfficeDayResponse> createOutOfOfficeDay(@RequestBody OutOfOfficeDayCreateRequest outOfOfficeDayCreateRequest) {
+        OutOfOfficeDayCreateRequestDTO requestDTO = mapper.toDTO(outOfOfficeDayCreateRequest);
+        OutOfOfficeDayResponseDTO responseDTO = outOfOfficeDayService.createOutOfOfficeDay(requestDTO);
+        OutOfOfficeDayResponse result = mapper.toResponse(responseDTO);
+        return ResponseEntity.ok(result);
     }
 
-    @PutMapping("/{outOfOfficeDayId}")
-    public OutOfOfficeDay updateOutOfOfficeDayById(@PathVariable Long outOfOfficeDayId, @RequestBody OutOfOfficeDay outOfOfficeDay) {
-        return outOfOfficeDayService.updateOutOfOfficeDayById(outOfOfficeDayId, outOfOfficeDay);
+    @PutMapping
+    public ResponseEntity<OutOfOfficeDayResponse> updateOutOfOfficeDay(@RequestBody OutOfOfficeDayUpdateRequest outOfOfficeDayUpdateRequest) {
+        OutOfOfficeDayUpdateRequestDTO requestDTO = mapper.toDTO(outOfOfficeDayUpdateRequest);
+        OutOfOfficeDayResponseDTO responseDTO = outOfOfficeDayService.updateOutOfOfficeDay(requestDTO);
+        OutOfOfficeDayResponse result = mapper.toResponse(responseDTO);
+        return ResponseEntity.ok(result);
     }
 
     @DeleteMapping("/{ids}")
-    public void deleteOfficeDaysByIds(@PathVariable List<Long> ids) {
+    public void deleteOutOfOfficeDays(@PathVariable List<Long> ids) {
         outOfOfficeDayService.deleteOutOfOfficeDaysByIds(ids);
     }
 }

@@ -1,68 +1,60 @@
 package com.base.ods.services.impl;
 
 import com.base.ods.domain.Zone;
+import com.base.ods.exception.ResourceNotFoundException;
+import com.base.ods.mapper.ZoneEntityToDTOMapper;
 import com.base.ods.repository.ZoneRepository;
 import com.base.ods.services.IZoneService;
+import com.base.ods.services.requests.ZoneCreateRequestDTO;
+import com.base.ods.services.requests.ZoneUpdateRequestDTO;
+import com.base.ods.services.responses.ZoneResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 @Log4j2
 public class ZoneServiceImpl implements IZoneService {
     private ZoneRepository zoneRepository;
+    private ZoneEntityToDTOMapper mapper;
 
     @Override
-    public List<Zone> getAllZones() {
-        return zoneRepository.findAll();
+    public List<ZoneResponseDTO> getAllZones() {
+        List<Zone> zoneList = zoneRepository.findAll();
+        return mapper.toDTOList(zoneList);
     }
 
     @Override
-    public Zone getZoneById(Long zoneId) {
-        Zone zone = zoneRepository.findById(zoneId).orElse(null);
-        if (zone != null)
-            return zone;
-        else {
-            log.warn("Zone not found by given {} id number.", zoneId);
-            return null;
-        }
+    public ZoneResponseDTO getZoneById(Long id) {
+        Zone zone = zoneRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Zone Not Found"));
+        return mapper.toDTO(zone);
     }
 
     @Override
-    public Zone createZone(Zone zone) {
-        return zoneRepository.save(zone);
+    public ZoneResponseDTO createZone(ZoneCreateRequestDTO zoneCreateRequestDTO) {
+        Zone toSave = mapper.toEntity(zoneCreateRequestDTO);
+        Zone result = zoneRepository.save(toSave);
+        return mapper.toDTO(result);
     }
 
     @Override
-    public Zone updateZoneById(Long zoneId, Zone zone) {
-        Optional<Zone> zoneUpdate = zoneRepository.findById(zoneId);
-        if (zoneUpdate.isPresent()) {
-            Zone toUpdate = zoneUpdate.get();
-            toUpdate.setZoneName(zone.getZoneName());
-            toUpdate.setTransportChoice(zone.getTransportChoice());
-            toUpdate.setCode(zone.getCode());
-            toUpdate.setUpperBound(zone.getUpperBound());
-            toUpdate.setLowerBound(zone.getLowerBound());
-            toUpdate.setPrice(zone.getPrice());
-            zoneRepository.save(toUpdate);
-            log.info("Zone with id {} updated.", toUpdate.getId());
-            return toUpdate;
-        } else {
-            log.warn("There is no zone information in the database with {} id number.", zoneId);
-            return null;
-        }
-    }
-
-    @Override
-    public void deleteZoneById(Long zoneId) {
-        Optional<Zone> zone = zoneRepository.findById(zoneId);
-        if (zone.isPresent()) {
-            zoneRepository.deleteById(zone.get().getId());
-            log.info("Zone with id number {} deleted", zoneId);
+    public ZoneResponseDTO updateZone(ZoneUpdateRequestDTO zoneUpdateRequestDTO) {
+        Zone zone = zoneRepository.findById(zoneUpdateRequestDTO.getId()).orElseThrow(() -> new ResourceNotFoundException("Zone Not Found"));
+        if (zone != null) {
+            Zone toUpdate = mapper.toEntity(zoneUpdateRequestDTO);
+            Zone result = zoneRepository.save(toUpdate);
+            return mapper.toDTO(result);
         } else
-            log.warn("There is no zone information in the database with {} id number.", zoneId);    }
+            return null;
+    }
+
+    @Override
+    @Transactional
+    public void deleteZonesByIds(List<Long> ids) {
+        zoneRepository.deleteByIdIn(ids);
+    }
 }

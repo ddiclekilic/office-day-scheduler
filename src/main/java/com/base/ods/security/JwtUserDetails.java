@@ -27,9 +27,19 @@ public class JwtUserDetails implements UserDetails {
     }
 
     public static JwtUserDetails create(User user) {
+        /*List<GrantedAuthority> authoritiesList = new ArrayList<>();
+        if (user.getRole().getRoleName().equals("MANAGER")) {
+            authoritiesList.add(new SimpleGrantedAuthority("MANAGER"));
+        } else if (user.getRole().getRoleName().equals("EMPLOYEE")) {
+            authoritiesList.add(new SimpleGrantedAuthority("EMPLOYEE"));
+        } else {
+            authoritiesList.add(new SimpleGrantedAuthority("SUPER_USER"));
+        }
+        return new JwtUserDetails(user.getId(), user.getEmail(), user.getPassword(), authoritiesList);*/
         List<GrantedAuthority> authoritiesList = new ArrayList<>();
-        authoritiesList.add(new SimpleGrantedAuthority("EMPLOYEE"));
+        authoritiesList.add(new SimpleGrantedAuthority(user.getRole().getRoleName()));
         //authoritiesList.add(new SimpleGrantedAuthority(user.getRole().getRoleName()));
+        System.out.println(user.getRole().getRoleName());
         return new JwtUserDetails(user.getId(), user.getEmail(), user.getPassword(), authoritiesList);
     }
 

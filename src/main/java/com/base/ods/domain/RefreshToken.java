@@ -1,7 +1,9 @@
 package com.base.ods.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -11,6 +13,7 @@ import java.util.Date;
 @Entity
 @Table(name = "refresh_token")
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class RefreshToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

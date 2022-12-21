@@ -2,17 +2,22 @@ package com.base.ods.services.impl;
 
 import com.base.ods.domain.Calendar;
 import com.base.ods.domain.User;
+import com.base.ods.exception.ResourceNotFoundException;
+import com.base.ods.mapper.CalendarEntityToDTOMapper;
+import com.base.ods.mapper.UserEntityToDTOMapper;
 import com.base.ods.repository.CalendarRepository;
-import com.base.ods.requests.CalendarCreateRequest;
-import com.base.ods.requests.CalendarUpdateRequest;
 import com.base.ods.services.ICalendarService;
 import com.base.ods.services.IUserService;
+import com.base.ods.services.requests.CalendarCreateRequestDTO;
+import com.base.ods.services.requests.CalendarUpdateRequestDTO;
+import com.base.ods.services.responses.CalendarResponseDTO;
+import com.base.ods.services.responses.UserResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -20,65 +25,52 @@ import java.util.Optional;
 public class CalendarServiceImpl implements ICalendarService {
     private CalendarRepository calendarRepository;
     private IUserService userService;
+    private CalendarEntityToDTOMapper mapper;
+    private UserEntityToDTOMapper userMapper;
 
     @Override
-    public List<Calendar> getAllCalendars(Optional<Long> userId, Optional<String> dateMonth, Optional<String> dateYear) {
-        if (userId.isPresent())
-            return calendarRepository.findByUserId(userId.get());
-        else if (dateMonth.isPresent() && dateYear.isPresent())
-            return calendarRepository.findByDateMonthAndDateYear(dateMonth.get(), dateYear.get());
-        return calendarRepository.findAll();
+    public List<CalendarResponseDTO> getAllCalendars() {
+        List<Calendar> calendarList = calendarRepository.findAll();
+        return mapper.toDTOList(calendarList);
     }
 
     @Override
-    public Calendar getCalendarById(Long calendarId) {
-        Calendar calendar = calendarRepository.findById(calendarId).orElse(null);
-        if (calendar != null)
-            return calendar;
-        else {
-            log.warn("Calendar not found by given {} id number.", calendarId);
-            return null;
-        }
+    public CalendarResponseDTO getCalendarById(Long id) {
+        Calendar calendar = calendarRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Calendar Not Found"));
+        return mapper.toDTO(calendar);
     }
 
     @Override
-    public Calendar createCalendar(CalendarCreateRequest calendarCreateRequest) {
-        User user = userService.getUserById(calendarCreateRequest.getUserId());
+    public CalendarResponseDTO createCalendar(CalendarCreateRequestDTO calendarCreateRequestDTO) {
+        UserResponseDTO responseDTO = userService.getUserById(calendarCreateRequestDTO.getUserId());
+        User user = userMapper.responseDTOToEntity(responseDTO);
+        //User user=userRepository.findById(calendarCreateRequestDTO.getUserId()).orElseThrow(()->new ResourceNotFoundException("User Not Found"));;
         if (user != null) {
-            Calendar toSave = new Calendar();
-            toSave.setDateMonth(calendarCreateRequest.getDateMonth());
-            toSave.setDateYear(calendarCreateRequest.getDateYear());
-            toSave.setDays(calendarCreateRequest.getDays());
+            Calendar toSave = mapper.toEntity(calendarCreateRequestDTO);
             toSave.setUser(user);
-            return calendarRepository.save(toSave);
+            Calendar newCalendar = calendarRepository.save(toSave);
+            return mapper.toDTO(newCalendar);
         } else
             return null;
     }
 
     @Override
-    public Calendar updateCalendarById(Long calendarId, CalendarUpdateRequest calendarUpdateRequest) {
-        Optional<Calendar> calendar = calendarRepository.findById(calendarId);
-        if (calendar.isPresent()) {
-            Calendar toUpdate = calendar.get();
-            toUpdate.setDateMonth(calendarUpdateRequest.getDateMonth());
-            toUpdate.setDateYear(calendarUpdateRequest.getDateYear());
-            toUpdate.setDays(calendarUpdateRequest.getDays());
-            calendarRepository.save(toUpdate);
-            log.info("Calendar with id {} updated.", toUpdate.getId());
-            return toUpdate;
-        } else {
-            log.warn("There is no calendar information in the database with {} id number.", calendarId);
+    public CalendarResponseDTO updateCalendar(CalendarUpdateRequestDTO calendarUpdateRequestDTO) {
+        Calendar calendar = calendarRepository.findById(calendarUpdateRequestDTO.getId()).orElseThrow(() -> new ResourceNotFoundException("Calendar Not Found"));
+        if (calendar != null) {
+            UserResponseDTO userResponseDTO = userService.getUserById(calendar.getUser().getId());
+            User user = userMapper.responseDTOToEntity(userResponseDTO);
+            Calendar toUpdate = mapper.toEntity(calendarUpdateRequestDTO);
+            toUpdate.setUser(user);
+            Calendar result = calendarRepository.save(toUpdate);
+            return mapper.toDTO(result);
+        } else
             return null;
-        }
     }
 
     @Override
-    public void deleteCalendarById(Long calendarId) {
-        Optional<Calendar> calendar = calendarRepository.findById(calendarId);
-        if (calendar.isPresent()) {
-            calendarRepository.deleteById(calendar.get().getId());
-            log.info("Calendar with id number {} deleted", calendarId);
-        } else
-            log.warn("There is no calendar information in the database with {} id number.", calendarId);
+    @Transactional
+    public void deleteCalendarsByIds(List<Long> ids) {
+        calendarRepository.deleteByIdIn(ids);
     }
 }

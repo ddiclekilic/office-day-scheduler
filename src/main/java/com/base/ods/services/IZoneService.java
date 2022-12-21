@@ -1,13 +1,21 @@
 package com.base.ods.services;
 
-import com.base.ods.domain.Zone;
+
+import com.base.ods.services.requests.ZoneCreateRequestDTO;
+import com.base.ods.services.requests.ZoneUpdateRequestDTO;
+import com.base.ods.services.responses.ZoneResponseDTO;
 
 import java.util.List;
 
 public interface IZoneService {
-    List<Zone> getAllZones();
-    Zone getZoneById(Long zoneId);
-    Zone createZone(Zone zone);
-    Zone updateZoneById(Long zoneId, Zone zone);
-    void deleteZoneById(Long zoneId);
+    List<ZoneResponseDTO> getAllZones();
+
+    ZoneResponseDTO getZoneById(Long id);
+
+    ZoneResponseDTO createZone(ZoneCreateRequestDTO zoneCreateRequestDTO);
+
+    ZoneResponseDTO updateZone(ZoneUpdateRequestDTO zoneUpdateRequestDTO);
+
+    void deleteZonesByIds(List<Long> ids);
+
 }
