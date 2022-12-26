@@ -6,6 +6,7 @@ import com.base.ods.services.requests.CalendarUpdateRequestDTO;
 import com.base.ods.services.responses.CalendarResponseDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -25,6 +26,8 @@ public interface CalendarEntityToDTOMapper {
     Calendar toEntity(CalendarCreateRequestDTO calendarCreateRequestDTO);
 
     Calendar toEntity(CalendarUpdateRequestDTO calendarUpdateRequestDTO);
+
+    List<CalendarResponseDTO> convert(Page<Calendar> calendars);
 
     List<CalendarResponseDTO> toDTOList(List<Calendar> calendarList);
 

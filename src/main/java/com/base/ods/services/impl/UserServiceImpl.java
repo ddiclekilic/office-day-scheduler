@@ -1,7 +1,7 @@
 package com.base.ods.services.impl;
 
 import com.base.ods.domain.*;
-import com.base.ods.exception.ResourceNotFoundException;
+import com.base.ods.exception.EntityNotFoundException;
 import com.base.ods.mapper.DepartmentEntityToDTOMapper;
 import com.base.ods.mapper.RoleEntityToDTOMapper;
 import com.base.ods.mapper.UserEntityToDTOMapper;
@@ -24,7 +24,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+
 import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 
 @Service
@@ -44,13 +46,11 @@ public class UserServiceImpl implements IUserService {
     @Override
     public List<UserResponseDTO> getAllUsers(Pageable pageable) {
         Page<User> userList = userRepository.findAll(pageable);
-        List<UserResponseDTO> responseDTO=mapper.convert(userList);
-        for(UserResponseDTO user:responseDTO){
+        List<UserResponseDTO> responseDTO = mapper.convert(userList);
+        for (UserResponseDTO user : responseDTO) {
             DepartmentResponseDTO departmentDTO = departmentService.getDepartmentById(user.getDepartmentId());
-            user.setDepartmentManagerId(departmentDTO.getDepartmentManagerId());
             user.setDepartmentManagerFirstName(departmentDTO.getDepartmentManagerFirstName());
             user.setDepartmentManagerLastName(departmentDTO.getDepartmentManagerLastName());
-            user.setGroupManagerId(departmentDTO.getGroupManagerId());
             user.setGroupManagerFirstName(departmentDTO.getGroupManagerFirstName());
             user.setGroupManagerLastName(departmentDTO.getGroupManagerLastName());
         }
@@ -59,7 +59,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public UserResponseDTO getUserById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User Not Found"));
+        User user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User Not Found"));
         UserResponseDTO responseDTO = mapper.toDTO(user);
         /*DepartmentResponseDTO departmentDTO = departmentService.getDepartmentById(user.getDepartment().getId());
         responseDTO.setDepartmentManagerFirstName(departmentDTO.getDepartmentManagerFirstName());
@@ -76,44 +76,38 @@ public class UserServiceImpl implements IUserService {
         ZoneResponseDTO zoneDTO = zoneService.getZoneById(userCreateRequestDTO.getZoneId());
         Zone zone = zoneMapper.responseDTOToEntity(zoneDTO);
         /*DepartmentResponseDTO departmentDTO = departmentService.getDepartmentById(userCreateRequestDTO.getDepartmentId());
-        User groupManager = userRepository.findById(departmentDTO.getGroupManagerId()).orElseThrow(() -> new ResourceNotFoundException("User Not Found"));
-        User departmentManager = userRepository.findById(departmentDTO.getDepartmentManagerId()).orElseThrow(() -> new ResourceNotFoundException("User Not Found"));*/
-        if (role != null && zone != null /*&& department != null*/) {
-            User toSave = mapper.toEntity(userCreateRequestDTO);
-            toSave.setRole(role);
-            toSave.setZone(zone);
-            //toSave.setDepartment(department);
-            //user.setPassword(passwordEncoder.encode(userRequestDTO.getPassword())); //update
-            User newUser = userRepository.save(toSave);
-            UserResponseDTO result = mapper.toDTO(newUser);
-            /*result.setDepartmentManagerFirstName(departmentManager.getFirstName());
-            result.setDepartmentManagerLastName(departmentManager.getLastName());
-            result.setGroupManagerFirstName(groupManager.getFirstName());
-            result.setGroupManagerLastName(groupManager.getLastName());*/
-            return result;
-        } else
-            return null;
+        User groupManager = userRepository.findById(departmentDTO.getGroupManagerId()).orElseThrow(() -> new EntityNotFoundException("User Not Found"));
+        User departmentManager = userRepository.findById(departmentDTO.getDepartmentManagerId()).orElseThrow(() -> new EntityNotFoundException("User Not Found"));*/
+        User toSave = mapper.toEntity(userCreateRequestDTO);
+        toSave.setRole(role);
+        toSave.setZone(zone);
+        //toSave.setDepartment(department);
+        //user.setPassword(passwordEncoder.encode(userRequestDTO.getPassword())); //update
+        User newUser = userRepository.save(toSave);
+        UserResponseDTO result = mapper.toDTO(newUser);
+        /*result.setDepartmentManagerFirstName(departmentManager.getFirstName());
+        result.setDepartmentManagerLastName(departmentManager.getLastName());
+        result.setGroupManagerFirstName(groupManager.getFirstName());
+        result.setGroupManagerLastName(groupManager.getLastName());*/
+        return result;
     }
 
     @Override
     public UserResponseDTO updateUser(UserUpdateRequestDTO userUpdateRequestDTO) {
+        User user = userRepository.findById(userUpdateRequestDTO.getId()).orElseThrow(() -> new EntityNotFoundException("User Not Found"));
         RoleResponseDTO roleDTO = roleService.getRoleById(userUpdateRequestDTO.getRoleId());
         Role role = roleMapper.responseDTOToEntity(roleDTO);
         ZoneResponseDTO zoneDTO = zoneService.getZoneById(userUpdateRequestDTO.getZoneId());
         Zone zone = zoneMapper.responseDTOToEntity(zoneDTO);
         DepartmentResponseDTO departmentDTO = departmentService.getDepartmentById(userUpdateRequestDTO.getDepartmentId());
         Department department = departmentMapper.responseDTOToEntity(departmentDTO);
-        User user = userRepository.findById(userUpdateRequestDTO.getId()).orElseThrow(() -> new ResourceNotFoundException("User Not Found"));
-        if (user != null && role!=null && zone!=null && department != null) {
-            User toSave = mapper.toEntity(userUpdateRequestDTO);
-            toSave.setRole(role);
-            toSave.setZone(zone);
-            toSave.setDepartment(department);
-            toSave.setRegistrationNumber(user.getRegistrationNumber());
-            User result = userRepository.save(toSave);
-            return mapper.toDTO(result);
-        }
-        return null;
+        User toUpdate = mapper.toEntity(userUpdateRequestDTO);
+        toUpdate.setRole(role);
+        toUpdate.setZone(zone);
+        toUpdate.setDepartment(department);
+        toUpdate.setRegistrationNumber(user.getRegistrationNumber());
+        User result = userRepository.save(toUpdate);
+        return mapper.toDTO(result);
     }
 
     @Override

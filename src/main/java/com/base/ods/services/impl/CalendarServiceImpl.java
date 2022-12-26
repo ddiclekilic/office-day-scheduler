@@ -2,7 +2,7 @@ package com.base.ods.services.impl;
 
 import com.base.ods.domain.Calendar;
 import com.base.ods.domain.User;
-import com.base.ods.exception.ResourceNotFoundException;
+import com.base.ods.exception.EntityNotFoundException;
 import com.base.ods.mapper.CalendarEntityToDTOMapper;
 import com.base.ods.mapper.UserEntityToDTOMapper;
 import com.base.ods.repository.CalendarRepository;
@@ -14,6 +14,8 @@ import com.base.ods.services.responses.CalendarResponseDTO;
 import com.base.ods.services.responses.UserResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -29,14 +31,15 @@ public class CalendarServiceImpl implements ICalendarService {
     private UserEntityToDTOMapper userMapper;
 
     @Override
-    public List<CalendarResponseDTO> getAllCalendars() {
-        List<Calendar> calendarList = calendarRepository.findAll();
-        return mapper.toDTOList(calendarList);
+    public List<CalendarResponseDTO> getAllCalendars(Pageable pageable) {
+        Page<Calendar> calendarList = calendarRepository.findAll(pageable);
+        List<CalendarResponseDTO> responseDTO = mapper.convert(calendarList);
+        return responseDTO;
     }
 
     @Override
     public CalendarResponseDTO getCalendarById(Long id) {
-        Calendar calendar = calendarRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Calendar Not Found"));
+        Calendar calendar = calendarRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Calendar Not Found"));
         return mapper.toDTO(calendar);
     }
 
@@ -44,28 +47,21 @@ public class CalendarServiceImpl implements ICalendarService {
     public CalendarResponseDTO createCalendar(CalendarCreateRequestDTO calendarCreateRequestDTO) {
         UserResponseDTO responseDTO = userService.getUserById(calendarCreateRequestDTO.getUserId());
         User user = userMapper.responseDTOToEntity(responseDTO);
-        //User user=userRepository.findById(calendarCreateRequestDTO.getUserId()).orElseThrow(()->new ResourceNotFoundException("User Not Found"));;
-        if (user != null) {
-            Calendar toSave = mapper.toEntity(calendarCreateRequestDTO);
-            toSave.setUser(user);
-            Calendar newCalendar = calendarRepository.save(toSave);
-            return mapper.toDTO(newCalendar);
-        } else
-            return null;
+        Calendar toSave = mapper.toEntity(calendarCreateRequestDTO);
+        toSave.setUser(user);
+        Calendar newCalendar = calendarRepository.save(toSave);
+        return mapper.toDTO(newCalendar);
     }
 
     @Override
     public CalendarResponseDTO updateCalendar(CalendarUpdateRequestDTO calendarUpdateRequestDTO) {
-        Calendar calendar = calendarRepository.findById(calendarUpdateRequestDTO.getId()).orElseThrow(() -> new ResourceNotFoundException("Calendar Not Found"));
-        if (calendar != null) {
-            UserResponseDTO userResponseDTO = userService.getUserById(calendar.getUser().getId());
-            User user = userMapper.responseDTOToEntity(userResponseDTO);
-            Calendar toUpdate = mapper.toEntity(calendarUpdateRequestDTO);
-            toUpdate.setUser(user);
-            Calendar result = calendarRepository.save(toUpdate);
-            return mapper.toDTO(result);
-        } else
-            return null;
+        Calendar calendar = calendarRepository.findById(calendarUpdateRequestDTO.getId()).orElseThrow(() -> new EntityNotFoundException("Calendar Not Found"));
+        UserResponseDTO userResponseDTO = userService.getUserById(calendar.getUser().getId());
+        User user = userMapper.responseDTOToEntity(userResponseDTO);
+        Calendar toUpdate = mapper.toEntity(calendarUpdateRequestDTO);
+        toUpdate.setUser(user);
+        Calendar result = calendarRepository.save(toUpdate);
+        return mapper.toDTO(result);
     }
 
     @Override

@@ -37,7 +37,7 @@ public class ZoneController {
     }
 
     @PostMapping
-    public ResponseEntity<ZoneResponse> createZone(@RequestBody ZoneCreateRequest zoneCreateRequest) {
+    public ResponseEntity<ZoneResponse> createZone(@Valid @RequestBody ZoneCreateRequest zoneCreateRequest) {
         ZoneCreateRequestDTO requestDTO = mapper.toDTO(zoneCreateRequest);
         ZoneResponseDTO responseDTO = zoneService.createZone(requestDTO);
         ZoneResponse result = mapper.toResponse(responseDTO);
@@ -45,7 +45,7 @@ public class ZoneController {
     }
 
     @PutMapping
-    public ResponseEntity<ZoneResponse> updateZone(@RequestBody ZoneUpdateRequest zoneUpdateRequest) {
+    public ResponseEntity<ZoneResponse> updateZone(@Valid @RequestBody ZoneUpdateRequest zoneUpdateRequest) {
         ZoneUpdateRequestDTO requestDTO = mapper.toDTO(zoneUpdateRequest);
         ZoneResponseDTO responseDTO = zoneService.updateZone(requestDTO);
         ZoneResponse result = mapper.toResponse(responseDTO);

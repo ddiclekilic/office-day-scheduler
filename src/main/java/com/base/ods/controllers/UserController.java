@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.data.domain.Pageable;
+
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -37,7 +39,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserResponse> createUser(@RequestBody UserCreateRequest userCreateRequest) {
+    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserCreateRequest userCreateRequest) {
         UserCreateRequestDTO requestDTO = mapper.toDTO(userCreateRequest);
         UserResponseDTO responseDTO = userService.createUser(requestDTO);
         UserResponse result = mapper.toResponse(responseDTO);
@@ -45,7 +47,7 @@ public class UserController {
     }
 
     @PutMapping
-    public ResponseEntity<UserResponse> updateUser(@RequestBody UserUpdateRequest userUpdateRequest) {
+    public ResponseEntity<UserResponse> updateUser(@Valid @RequestBody UserUpdateRequest userUpdateRequest) {
         UserUpdateRequestDTO requestDTO = mapper.toDTO(userUpdateRequest);
         UserResponseDTO responseDTO = userService.updateUser(requestDTO);
         UserResponse result = mapper.toResponse(responseDTO);

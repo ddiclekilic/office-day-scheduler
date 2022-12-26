@@ -18,8 +18,10 @@ public class OutOfOfficeDay {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     @Column(nullable = false)
+    @NotBlank(message = "Name is mandatory")
     String displayName;
     @Column(nullable = false)
     @Temporal(TemporalType.DATE)
+    @NotNull(message = "Date is mandatory")
     Date date;
 }

@@ -1,7 +1,7 @@
 package com.base.ods.services.impl;
 
 import com.base.ods.domain.Zone;
-import com.base.ods.exception.ResourceNotFoundException;
+import com.base.ods.exception.EntityNotFoundException;
 import com.base.ods.mapper.ZoneEntityToDTOMapper;
 import com.base.ods.repository.ZoneRepository;
 import com.base.ods.services.IZoneService;
@@ -30,7 +30,7 @@ public class ZoneServiceImpl implements IZoneService {
 
     @Override
     public ZoneResponseDTO getZoneById(Long id) {
-        Zone zone = zoneRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Zone Not Found"));
+        Zone zone = zoneRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Zone Not Found"));
         return mapper.toDTO(zone);
     }
 
@@ -43,13 +43,10 @@ public class ZoneServiceImpl implements IZoneService {
 
     @Override
     public ZoneResponseDTO updateZone(ZoneUpdateRequestDTO zoneUpdateRequestDTO) {
-        Zone zone = zoneRepository.findById(zoneUpdateRequestDTO.getId()).orElseThrow(() -> new ResourceNotFoundException("Zone Not Found"));
-        if (zone != null) {
-            Zone toUpdate = mapper.toEntity(zoneUpdateRequestDTO);
-            Zone result = zoneRepository.save(toUpdate);
-            return mapper.toDTO(result);
-        } else
-            return null;
+        Zone zone = zoneRepository.findById(zoneUpdateRequestDTO.getId()).orElseThrow(() -> new EntityNotFoundException("Zone Not Found"));
+        Zone toUpdate = mapper.toEntity(zoneUpdateRequestDTO);
+        Zone result = zoneRepository.save(toUpdate);
+        return mapper.toDTO(result);
     }
 
     @Override

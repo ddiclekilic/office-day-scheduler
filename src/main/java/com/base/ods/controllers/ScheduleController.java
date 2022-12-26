@@ -10,9 +10,11 @@ import com.base.ods.services.requests.ScheduleCreateRequestDTO;
 import com.base.ods.services.requests.ScheduleUpdateRequestDTO;
 import com.base.ods.services.responses.ScheduleResponseDTO;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -23,8 +25,8 @@ public class ScheduleController {
     private ScheduleResponseToDTOMapper mapper;
 
     @GetMapping
-    public ResponseEntity<List<ScheduleResponse>> getAllSchedules() {
-        List<ScheduleResponseDTO> responseDTO = scheduleService.getAllSchedules();
+    public ResponseEntity<List<ScheduleResponse>> getAllSchedules(Pageable pageable) {
+        List<ScheduleResponseDTO> responseDTO = scheduleService.getAllSchedules(pageable);
         List<ScheduleResponse> result = mapper.toResponseList(responseDTO);
         return ResponseEntity.ok(result);
     }
@@ -37,7 +39,7 @@ public class ScheduleController {
     }
 
     @PostMapping
-    public ResponseEntity<ScheduleResponse> createSchedule(@RequestBody ScheduleCreateRequest scheduleCreateRequest) {
+    public ResponseEntity<ScheduleResponse> createSchedule(@Valid @RequestBody ScheduleCreateRequest scheduleCreateRequest) {
         ScheduleCreateRequestDTO requestDTO = mapper.toDTO(scheduleCreateRequest);
         ScheduleResponseDTO responseDTO = scheduleService.createSchedule(requestDTO);
         ScheduleResponse result = mapper.toResponse(responseDTO);
@@ -45,7 +47,7 @@ public class ScheduleController {
     }
 
     @PutMapping
-    public ResponseEntity<ScheduleResponse> updateSchedule(@RequestBody ScheduleUpdateRequest scheduleUpdateRequest) {
+    public ResponseEntity<ScheduleResponse> updateSchedule(@Valid @RequestBody ScheduleUpdateRequest scheduleUpdateRequest) {
         ScheduleUpdateRequestDTO requestDTO = mapper.toDTO(scheduleUpdateRequest);
         ScheduleResponseDTO responseDTO = scheduleService.updateSchedule(requestDTO);
         ScheduleResponse result = mapper.toResponse(responseDTO);

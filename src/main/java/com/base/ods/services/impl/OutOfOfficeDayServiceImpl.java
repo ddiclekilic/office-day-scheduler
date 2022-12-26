@@ -1,7 +1,7 @@
 package com.base.ods.services.impl;
 
 import com.base.ods.domain.OutOfOfficeDay;
-import com.base.ods.exception.ResourceNotFoundException;
+import com.base.ods.exception.EntityNotFoundException;
 import com.base.ods.mapper.OutOfOfficeDayEntityToDTOMapper;
 import com.base.ods.repository.OutOfOfficeDayRepository;
 import com.base.ods.services.IOutOfOfficeDayService;
@@ -30,7 +30,7 @@ public class OutOfOfficeDayServiceImpl implements IOutOfOfficeDayService {
 
     @Override
     public OutOfOfficeDayResponseDTO getOutOfOfficeDayById(Long id) {
-        OutOfOfficeDay outOfOfficeDay = outOfOfficeDayRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Out of Office Day Not Found"));
+        OutOfOfficeDay outOfOfficeDay = outOfOfficeDayRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Out of Office Day Not Found"));
         return mapper.toDTO(outOfOfficeDay);
     }
 
@@ -43,13 +43,10 @@ public class OutOfOfficeDayServiceImpl implements IOutOfOfficeDayService {
 
     @Override
     public OutOfOfficeDayResponseDTO updateOutOfOfficeDay(OutOfOfficeDayUpdateRequestDTO outOfOfficeDay) {
-        OutOfOfficeDay officeDay = outOfOfficeDayRepository.findById(outOfOfficeDay.getId()).orElseThrow(() -> new ResourceNotFoundException("Out of Office Day Not Found"));
-        if (officeDay != null) {
-            OutOfOfficeDay toUpdate = mapper.toEntity(outOfOfficeDay);
-            OutOfOfficeDay result = outOfOfficeDayRepository.save(toUpdate);
-            return mapper.toDTO(result);
-        }
-        return null;
+        OutOfOfficeDay officeDay = outOfOfficeDayRepository.findById(outOfOfficeDay.getId()).orElseThrow(() -> new EntityNotFoundException("Out of Office Day Not Found"));
+        OutOfOfficeDay toUpdate = mapper.toEntity(outOfOfficeDay);
+        OutOfOfficeDay result = outOfOfficeDayRepository.save(toUpdate);
+        return mapper.toDTO(result);
     }
 
     @Override

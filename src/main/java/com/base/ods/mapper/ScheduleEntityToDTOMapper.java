@@ -7,6 +7,7 @@ import com.base.ods.services.requests.ScheduleUpdateRequestDTO;
 import com.base.ods.services.responses.ScheduleResponseDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -26,6 +27,8 @@ public interface ScheduleEntityToDTOMapper {
     Schedule toEntity(ScheduleCreateRequestDTO scheduleCreateRequestDTO);
 
     Schedule toEntity(ScheduleUpdateRequestDTO scheduleUpdateRequestDTO);
+
+    List<ScheduleResponseDTO> convert(Page<Schedule> schedules);
 
     List<ScheduleResponseDTO> toDTOList(List<Schedule> scheduleList);
 }

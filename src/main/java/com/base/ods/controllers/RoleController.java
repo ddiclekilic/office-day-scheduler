@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -36,7 +37,7 @@ public class RoleController {
     }
 
     @PostMapping
-    public ResponseEntity<RoleResponse> createRole(@RequestBody RoleCreateRequest roleCreateRequest) {
+    public ResponseEntity<RoleResponse> createRole(@Valid @RequestBody RoleCreateRequest roleCreateRequest) {
         RoleCreateRequestDTO requestDTO = mapper.toDTO(roleCreateRequest);
         RoleResponseDTO responseDTO = roleService.createRole(requestDTO);
         RoleResponse result = mapper.toResponse(responseDTO);
@@ -44,7 +45,7 @@ public class RoleController {
     }
 
     @PutMapping
-    public ResponseEntity<RoleResponse> updateRoleById(@RequestBody RoleUpdateRequest roleUpdateRequest) {
+    public ResponseEntity<RoleResponse> updateRole(@Valid @RequestBody RoleUpdateRequest roleUpdateRequest) {
         RoleUpdateRequestDTO requestDTO = mapper.toDTO(roleUpdateRequest);
         RoleResponseDTO responseDTO = roleService.updateRole(requestDTO);
         RoleResponse result = mapper.toResponse(responseDTO);

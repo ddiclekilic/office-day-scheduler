@@ -1,7 +1,8 @@
 package com.base.ods.services.impl;
 
 import com.base.ods.domain.Role;
-import com.base.ods.exception.ResourceNotFoundException;
+import com.base.ods.exception.EntityAlreadyExistsException;
+import com.base.ods.exception.EntityNotFoundException;
 import com.base.ods.mapper.RoleEntityToDTOMapper;
 import com.base.ods.repository.RoleRepository;
 import com.base.ods.services.IRoleService;
@@ -24,18 +25,22 @@ public class RoleServiceImpl implements IRoleService {
 
     @Override
     public List<RoleResponseDTO> getAllRoles() {
-        List<Role> roleList=roleRepository.findAll();
+        List<Role> roleList = roleRepository.findAll();
         return mapper.toDTOList(roleList);
     }
 
     @Override
     public RoleResponseDTO getRoleById(Long id) {
-        Role role = roleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Role Not Found"));
+        Role role = roleRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Role Not Found"));
         return mapper.toDTO(role);
     }
 
     @Override
     public RoleResponseDTO createRole(RoleCreateRequestDTO roleCreateRequestDTO) {
+        Role role = roleRepository.findByRoleName(roleCreateRequestDTO.getRoleName());
+        if (role != null) {
+            throw new EntityAlreadyExistsException("Entity with name " + roleCreateRequestDTO.getRoleName() + " already exists");
+        }
         Role toSave = mapper.toEntity(roleCreateRequestDTO);
         Role result = roleRepository.save(toSave);
         return mapper.toDTO(result);
@@ -43,13 +48,10 @@ public class RoleServiceImpl implements IRoleService {
 
     @Override
     public RoleResponseDTO updateRole(RoleUpdateRequestDTO roleUpdateRequestDTO) {
-        Role role = roleRepository.findById(roleUpdateRequestDTO.getId()).orElseThrow(() -> new ResourceNotFoundException("Role Not Found"));
-        if (role != null) {
-            Role toUpdate = mapper.toEntity(roleUpdateRequestDTO);
-            Role result = roleRepository.save(toUpdate);
-            return mapper.toDTO(result);
-        } else
-            return null;
+        Role role = roleRepository.findById(roleUpdateRequestDTO.getId()).orElseThrow(() -> new EntityNotFoundException("Role Not Found"));
+        Role toUpdate = mapper.toEntity(roleUpdateRequestDTO);
+        Role result = roleRepository.save(toUpdate);
+        return mapper.toDTO(result);
     }
 
     @Override

@@ -38,7 +38,7 @@ public class OutOfOfficeDayController {
     }
 
     @PostMapping
-    public ResponseEntity<OutOfOfficeDayResponse> createOutOfOfficeDay(@RequestBody OutOfOfficeDayCreateRequest outOfOfficeDayCreateRequest) {
+    public ResponseEntity<OutOfOfficeDayResponse> createOutOfOfficeDay(@Valid @RequestBody OutOfOfficeDayCreateRequest outOfOfficeDayCreateRequest) {
         OutOfOfficeDayCreateRequestDTO requestDTO = mapper.toDTO(outOfOfficeDayCreateRequest);
         OutOfOfficeDayResponseDTO responseDTO = outOfOfficeDayService.createOutOfOfficeDay(requestDTO);
         OutOfOfficeDayResponse result = mapper.toResponse(responseDTO);
@@ -46,7 +46,7 @@ public class OutOfOfficeDayController {
     }
 
     @PutMapping
-    public ResponseEntity<OutOfOfficeDayResponse> updateOutOfOfficeDay(@RequestBody OutOfOfficeDayUpdateRequest outOfOfficeDayUpdateRequest) {
+    public ResponseEntity<OutOfOfficeDayResponse> updateOutOfOfficeDay(@Valid @RequestBody OutOfOfficeDayUpdateRequest outOfOfficeDayUpdateRequest) {
         OutOfOfficeDayUpdateRequestDTO requestDTO = mapper.toDTO(outOfOfficeDayUpdateRequest);
         OutOfOfficeDayResponseDTO responseDTO = outOfOfficeDayService.updateOutOfOfficeDay(requestDTO);
         OutOfOfficeDayResponse result = mapper.toResponse(responseDTO);
