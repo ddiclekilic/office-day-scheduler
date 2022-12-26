@@ -19,12 +19,6 @@
 
 - User List
     - /user         : ***GET***
-    
-- User List by Department ID
-    - /user?departmentId={departmentId}    : ***GET***
-    
-- User List by Role ID
-    - /user?roleId={roleId}   : ***GET***
    
 - Get User By ID
     - /user/{id}         : ***GET***
@@ -33,7 +27,7 @@
     - /user         : ***POST*** 
     
 - Update User
-    - /user/{id}         : ***PUT***
+    - /user         : ***PUT***
     
 - Delete User
     - /user/{id}         : ***DELETE*** 
@@ -50,7 +44,7 @@
     - /department             : ***POST***
     
 - Update Department
-    - /department/{id}        : ***PUT***
+    - /department        : ***PUT***
     
 - Delete Department
     - /department/{id}        : ***DELETE***
@@ -67,7 +61,7 @@
     - /role         : ***POST*** 
     
 - Update Role
-    - /role/{id}         : ***PUT***
+    - /role        : ***PUT***
     
 - Delete Role
     - /role/{id}         : ***DELETE***
@@ -84,7 +78,7 @@
     - /zone         : ***POST*** 
     
 - Update Zone
-    - /zone/{id}         : ***PUT***
+    - /zone         : ***PUT***
     
 - Delete Zone
     - /zone/{id}         : ***DELETE***
@@ -101,7 +95,7 @@
     - /schedule         : ***POST*** 
     
 - Update Schedule
-    - /schedule/{id}         : ***PUT***
+    - /schedule         : ***PUT***
     
 - Delete Schedule
     - /schedule/{id}         : ***DELETE***    
@@ -118,7 +112,7 @@
     - /outofofficeday         : ***POST*** 
     
 - Update Out of Office Day
-    - /outofofficeday/{id}         : ***PUT***
+    - /outofofficeday         : ***PUT***
     
 - Delete Out of Office Day
     - /outofofficeday/{id}         : ***DELETE***  
@@ -135,7 +129,7 @@
     - /calendar         : ***POST*** 
     
 - Update Calendar
-    - /calendar/{id}         : ***PUT***
+    - /calendar         : ***PUT***
     
 - Delete Calendar
     - /calendar/{id}         : ***DELETE*** 
