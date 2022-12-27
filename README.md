@@ -30,7 +30,7 @@
     - /user         : ***PUT***
     
 - Delete User
-    - /user/{id}         : ***DELETE*** 
+    - /user         : ***DELETE*** 
     
 #### DEPARTMENT
 
@@ -47,7 +47,7 @@
     - /department        : ***PUT***
     
 - Delete Department
-    - /department/{id}        : ***DELETE***
+    - /department        : ***DELETE***
 
 #### ROLE
 
@@ -64,7 +64,7 @@
     - /role        : ***PUT***
     
 - Delete Role
-    - /role/{id}         : ***DELETE***
+    - /role        : ***DELETE***
     
 #### ZONE
 
@@ -81,7 +81,7 @@
     - /zone         : ***PUT***
     
 - Delete Zone
-    - /zone/{id}         : ***DELETE***
+    - /zone         : ***DELETE***
     
 #### SCHEDULE
 
@@ -98,7 +98,7 @@
     - /schedule         : ***PUT***
     
 - Delete Schedule
-    - /schedule/{id}         : ***DELETE***    
+    - /schedule         : ***DELETE***    
     
 #### OUT OF OFFICE DAY
 
@@ -115,7 +115,7 @@
     - /outofofficeday         : ***PUT***
     
 - Delete Out of Office Day
-    - /outofofficeday/{id}         : ***DELETE***  
+    - /outofofficeday         : ***DELETE***  
 
 #### CALENDAR
 
@@ -132,4 +132,4 @@
     - /calendar         : ***PUT***
     
 - Delete Calendar
-    - /calendar/{id}         : ***DELETE*** 
+    - /calendar         : ***DELETE*** 
