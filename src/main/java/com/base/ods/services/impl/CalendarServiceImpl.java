@@ -67,6 +67,11 @@ public class CalendarServiceImpl implements ICalendarService {
     @Override
     @Transactional
     public void deleteCalendarsByIds(List<Long> ids) {
+        for(Long id:ids){
+            if(!calendarRepository.existsById(id)){
+                throw new EntityNotFoundException("Calendar with id "+id+" not found");
+            }
+        }
         calendarRepository.deleteByIdIn(ids);
     }
 }

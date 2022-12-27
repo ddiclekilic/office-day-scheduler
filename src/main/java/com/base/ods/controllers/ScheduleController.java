@@ -54,8 +54,8 @@ public class ScheduleController {
         return ResponseEntity.ok(result);
     }
 
-    @DeleteMapping("/{ids}")
-    public void deleteScheduleById(@PathVariable List<Long> ids) {
+    @DeleteMapping
+    public void deleteScheduleById(@RequestBody List<Long> ids) {
         scheduleService.deleteSchedulesByIds(ids);
     }
 }

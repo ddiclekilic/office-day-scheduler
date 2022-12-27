@@ -67,6 +67,11 @@ public class ScheduleServiceImpl implements IScheduleService {
     @Override
     @Transactional
     public void deleteSchedulesByIds(List<Long> ids) {
+        for(Long id:ids){
+            if(!scheduleRepository.existsById(id)){
+                throw new EntityNotFoundException("Schedule with id "+id+" not found");
+            }
+        }
         scheduleRepository.deleteByIdIn(ids);
     }
 }

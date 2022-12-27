@@ -53,8 +53,8 @@ public class OutOfOfficeDayController {
         return ResponseEntity.ok(result);
     }
 
-    @DeleteMapping("/{ids}")
-    public void deleteOutOfOfficeDays(@PathVariable List<Long> ids) {
+    @DeleteMapping
+    public void deleteOutOfOfficeDays(@RequestBody List<Long> ids) {
         outOfOfficeDayService.deleteOutOfOfficeDaysByIds(ids);
     }
 }

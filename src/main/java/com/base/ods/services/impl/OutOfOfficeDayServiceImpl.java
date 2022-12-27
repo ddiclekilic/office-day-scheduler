@@ -52,6 +52,11 @@ public class OutOfOfficeDayServiceImpl implements IOutOfOfficeDayService {
     @Override
     @Transactional
     public void deleteOutOfOfficeDaysByIds(List<Long> ids) {
+        for(Long id:ids){
+            if(!outOfOfficeDayRepository.existsById(id)){
+                throw new EntityNotFoundException("Office day with id "+id+" not found");
+            }
+        }
         outOfOfficeDayRepository.deleteByIdIn(ids);
     }
 }

@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface ZoneRepository extends JpaRepository<Zone, Long> {
     void deleteByIdIn(List<Long> ids);
+    boolean existsById(Long id);
 }

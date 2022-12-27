@@ -52,6 +52,11 @@ public class ZoneServiceImpl implements IZoneService {
     @Override
     @Transactional
     public void deleteZonesByIds(List<Long> ids) {
+        for(Long id:ids){
+            if(!zoneRepository.existsById(id)){
+                throw new EntityNotFoundException("Zone with id "+id+" not found");
+            }
+        }
         zoneRepository.deleteByIdIn(ids);
     }
 }

@@ -54,8 +54,8 @@ public class UserController {
         return ResponseEntity.ok(result);
     }
 
-    @DeleteMapping("/{ids}")
-    public void deleteUsers(@PathVariable List<Long> ids) {
+    @DeleteMapping
+    public void deleteUsers(@RequestBody List<Long> ids) {
         userService.deleteUsersByIds(ids);
     }
 }

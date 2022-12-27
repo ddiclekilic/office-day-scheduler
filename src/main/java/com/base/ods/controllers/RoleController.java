@@ -52,8 +52,8 @@ public class RoleController {
         return ResponseEntity.ok(result);
     }
 
-    @DeleteMapping("/{ids}")
-    public void deleteRolesByIds(@PathVariable List<Long> ids) {
+    @DeleteMapping
+    public void deleteRolesByIds(@RequestBody List<Long> ids) {
         roleService.deleteRolesByIds(ids);
     }
 }

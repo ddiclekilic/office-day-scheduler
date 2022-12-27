@@ -54,8 +54,8 @@ public class CalendarController {
         return ResponseEntity.ok(result);
     }
 
-    @DeleteMapping("/{ids}")
-    public void deleteCalendarById(@PathVariable List<Long> ids) {
+    @DeleteMapping
+    public void deleteCalendarById(@RequestBody List<Long> ids) {
         calendarService.deleteCalendarsByIds(ids);
     }
 }

@@ -10,4 +10,5 @@ import java.util.List;
 public interface RoleRepository extends JpaRepository<Role, Long> {
     void deleteByIdIn(List<Long> ids);
     Role findByRoleName(String roleName);
+    boolean existsById(Long id);
 }

@@ -57,6 +57,11 @@ public class RoleServiceImpl implements IRoleService {
     @Override
     @Transactional
     public void deleteRolesByIds(List<Long> ids) {
+        for(Long id:ids){
+            if(!roleRepository.existsById(id)){
+                throw new EntityNotFoundException("Role with id "+id+" not found");
+            }
+        }
         roleRepository.deleteByIdIn(ids);
     }
 }

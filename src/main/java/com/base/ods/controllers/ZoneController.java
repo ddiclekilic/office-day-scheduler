@@ -52,8 +52,8 @@ public class ZoneController {
         return ResponseEntity.ok(result);
     }
 
-    @DeleteMapping("/{ids}")
-    public void deleteZone(@PathVariable List<Long> ids) {
+    @DeleteMapping
+    public void deleteZone(@RequestBody List<Long> ids) {
         zoneService.deleteZonesByIds(ids);
     }
 }

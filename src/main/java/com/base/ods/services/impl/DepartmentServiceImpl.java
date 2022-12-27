@@ -93,6 +93,11 @@ public class DepartmentServiceImpl implements IDepartmentService {
     @Override
     @Transactional
     public void deleteDepartmentsByIds(List<Long> ids) {
+        for(Long id:ids){
+            if(!departmentRepository.existsById(id)){
+                throw new EntityNotFoundException("Department with id "+id+" not found");
+            }
+        }
         departmentRepository.deleteByIdIn(ids);
     }
 }

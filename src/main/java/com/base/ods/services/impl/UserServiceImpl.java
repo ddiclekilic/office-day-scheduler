@@ -113,6 +113,11 @@ public class UserServiceImpl implements IUserService {
     @Override
     @Transactional
     public void deleteUsersByIds(List<Long> ids) {
+        for(Long id:ids){
+            if(!userRepository.existsById(id)){
+                throw new EntityNotFoundException("User with id "+id+" not found");
+            }
+        }
         userRepository.deleteByIdIn(ids);
     }
 

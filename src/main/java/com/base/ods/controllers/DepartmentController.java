@@ -53,8 +53,8 @@ public class DepartmentController {
         return ResponseEntity.ok(result);
     }
 
-    @DeleteMapping("/{ids}")
-    public void deleteDepartments(@PathVariable List<Long> ids) {
+    @DeleteMapping
+    public void deleteDepartments(@RequestBody List<Long> ids) {
         departmentService.deleteDepartmentsByIds(ids);
     }
 }
