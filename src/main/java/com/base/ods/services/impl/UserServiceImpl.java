@@ -17,6 +17,7 @@ import com.base.ods.services.responses.UserResponseDTO;
 import com.base.ods.services.IDepartmentService;
 import com.base.ods.services.IZoneService;
 import com.base.ods.services.responses.ZoneResponseDTO;
+import com.base.ods.util.constants.Messages;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -59,13 +60,13 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public UserResponseDTO getUserById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User Not Found"));
+        User user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(Messages.USER_NOT_FOUND + id));
         UserResponseDTO responseDTO = mapper.toDTO(user);
-        /*DepartmentResponseDTO departmentDTO = departmentService.getDepartmentById(user.getDepartment().getId());
+        DepartmentResponseDTO departmentDTO = departmentService.getDepartmentById(user.getDepartment().getId());
         responseDTO.setDepartmentManagerFirstName(departmentDTO.getDepartmentManagerFirstName());
         responseDTO.setDepartmentManagerLastName(departmentDTO.getDepartmentManagerLastName());
         responseDTO.setGroupManagerFirstName(departmentDTO.getGroupManagerFirstName());
-        responseDTO.setGroupManagerLastName(departmentDTO.getGroupManagerLastName());*/
+        responseDTO.setGroupManagerLastName(departmentDTO.getGroupManagerLastName());
         return responseDTO;
     }
 
@@ -75,26 +76,25 @@ public class UserServiceImpl implements IUserService {
         Role role = roleMapper.responseDTOToEntity(roleDTO);
         ZoneResponseDTO zoneDTO = zoneService.getZoneById(userCreateRequestDTO.getZoneId());
         Zone zone = zoneMapper.responseDTOToEntity(zoneDTO);
-        /*DepartmentResponseDTO departmentDTO = departmentService.getDepartmentById(userCreateRequestDTO.getDepartmentId());
-        User groupManager = userRepository.findById(departmentDTO.getGroupManagerId()).orElseThrow(() -> new EntityNotFoundException("User Not Found"));
-        User departmentManager = userRepository.findById(departmentDTO.getDepartmentManagerId()).orElseThrow(() -> new EntityNotFoundException("User Not Found"));*/
+        DepartmentResponseDTO departmentDTO = departmentService.getDepartmentById(userCreateRequestDTO.getDepartmentId());
+        Department department = departmentMapper.responseDTOToEntity(departmentDTO);
         User toSave = mapper.toEntity(userCreateRequestDTO);
         toSave.setRole(role);
         toSave.setZone(zone);
-        //toSave.setDepartment(department);
+        toSave.setDepartment(department);
         //user.setPassword(passwordEncoder.encode(userRequestDTO.getPassword())); //update
         User newUser = userRepository.save(toSave);
         UserResponseDTO result = mapper.toDTO(newUser);
-        /*result.setDepartmentManagerFirstName(departmentManager.getFirstName());
-        result.setDepartmentManagerLastName(departmentManager.getLastName());
-        result.setGroupManagerFirstName(groupManager.getFirstName());
-        result.setGroupManagerLastName(groupManager.getLastName());*/
+        result.setDepartmentManagerFirstName(departmentDTO.getDepartmentManagerFirstName());
+        result.setDepartmentManagerLastName(departmentDTO.getDepartmentManagerLastName());
+        result.setGroupManagerFirstName(departmentDTO.getGroupManagerFirstName());
+        result.setGroupManagerLastName(departmentDTO.getGroupManagerLastName());
         return result;
     }
 
     @Override
     public UserResponseDTO updateUser(UserUpdateRequestDTO userUpdateRequestDTO) {
-        User user = userRepository.findById(userUpdateRequestDTO.getId()).orElseThrow(() -> new EntityNotFoundException("User Not Found"));
+        User user = userRepository.findById(userUpdateRequestDTO.getId()).orElseThrow(() -> new EntityNotFoundException(Messages.USER_NOT_FOUND + userUpdateRequestDTO.getId()));
         RoleResponseDTO roleDTO = roleService.getRoleById(userUpdateRequestDTO.getRoleId());
         Role role = roleMapper.responseDTOToEntity(roleDTO);
         ZoneResponseDTO zoneDTO = zoneService.getZoneById(userUpdateRequestDTO.getZoneId());
@@ -106,16 +106,23 @@ public class UserServiceImpl implements IUserService {
         toUpdate.setZone(zone);
         toUpdate.setDepartment(department);
         toUpdate.setRegistrationNumber(user.getRegistrationNumber());
-        User result = userRepository.save(toUpdate);
-        return mapper.toDTO(result);
+        toUpdate.setEmail(user.getEmail());
+        toUpdate.setPassword(passwordEncoder.encode(userUpdateRequestDTO.getPassword()));
+        User newUser = userRepository.save(toUpdate);
+        UserResponseDTO result = mapper.toDTO(newUser);
+        result.setDepartmentManagerFirstName(departmentDTO.getDepartmentManagerFirstName());
+        result.setDepartmentManagerLastName(departmentDTO.getDepartmentManagerLastName());
+        result.setGroupManagerFirstName(departmentDTO.getGroupManagerFirstName());
+        result.setGroupManagerLastName(departmentDTO.getGroupManagerLastName());
+        return result;
     }
 
     @Override
     @Transactional
     public void deleteUsersByIds(List<Long> ids) {
-        for(Long id:ids){
-            if(!userRepository.existsById(id)){
-                throw new EntityNotFoundException("User with id "+id+" not found");
+        for (Long id : ids) {
+            if (!userRepository.existsById(id)) {
+                throw new EntityNotFoundException(Messages.USER_NOT_FOUND + id);
             }
         }
         userRepository.deleteByIdIn(ids);
@@ -124,5 +131,20 @@ public class UserServiceImpl implements IUserService {
     @Override
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    @Override
+    public boolean roleExists(Long roleId) {
+        return userRepository.existsByRoleId(roleId);
+    }
+
+    @Override
+    public boolean departmentExists(Long departmentId) {
+        return userRepository.existsByDepartmentId(departmentId);
+    }
+
+    @Override
+    public boolean zoneExists(Long zoneId) {
+        return userRepository.existsByZoneId(zoneId);
     }
 }

@@ -12,6 +12,7 @@ import com.base.ods.services.requests.CalendarCreateRequestDTO;
 import com.base.ods.services.requests.CalendarUpdateRequestDTO;
 import com.base.ods.services.responses.CalendarResponseDTO;
 import com.base.ods.services.responses.UserResponseDTO;
+import com.base.ods.util.constants.Messages;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -39,7 +40,7 @@ public class CalendarServiceImpl implements ICalendarService {
 
     @Override
     public CalendarResponseDTO getCalendarById(Long id) {
-        Calendar calendar = calendarRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Calendar Not Found"));
+        Calendar calendar = calendarRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(Messages.CALENDAR_NOT_FOUND + id));
         return mapper.toDTO(calendar);
     }
 
@@ -55,7 +56,7 @@ public class CalendarServiceImpl implements ICalendarService {
 
     @Override
     public CalendarResponseDTO updateCalendar(CalendarUpdateRequestDTO calendarUpdateRequestDTO) {
-        Calendar calendar = calendarRepository.findById(calendarUpdateRequestDTO.getId()).orElseThrow(() -> new EntityNotFoundException("Calendar Not Found"));
+        Calendar calendar = calendarRepository.findById(calendarUpdateRequestDTO.getId()).orElseThrow(() -> new EntityNotFoundException(Messages.CALENDAR_NOT_FOUND + calendarUpdateRequestDTO.getId()));
         UserResponseDTO userResponseDTO = userService.getUserById(calendar.getUser().getId());
         User user = userMapper.responseDTOToEntity(userResponseDTO);
         Calendar toUpdate = mapper.toEntity(calendarUpdateRequestDTO);
@@ -67,9 +68,9 @@ public class CalendarServiceImpl implements ICalendarService {
     @Override
     @Transactional
     public void deleteCalendarsByIds(List<Long> ids) {
-        for(Long id:ids){
-            if(!calendarRepository.existsById(id)){
-                throw new EntityNotFoundException("Calendar with id "+id+" not found");
+        for (Long id : ids) {
+            if (!calendarRepository.existsById(id)) {
+                throw new EntityNotFoundException(Messages.CALENDAR_NOT_FOUND + id);
             }
         }
         calendarRepository.deleteByIdIn(ids);

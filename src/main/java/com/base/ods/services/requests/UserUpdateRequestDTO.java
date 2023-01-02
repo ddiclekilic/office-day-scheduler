@@ -10,7 +10,6 @@ public class UserUpdateRequestDTO {
     Long id;
     String firstName;
     String lastName;
-    String email;
     String password;
     String transportChoice;
     Long roleId;

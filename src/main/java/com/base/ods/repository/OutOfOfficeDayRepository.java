@@ -9,5 +9,4 @@ import java.util.List;
 @Repository
 public interface OutOfOfficeDayRepository extends JpaRepository<OutOfOfficeDay, Long> {
     void deleteByIdIn(List<Long> ids);
-    boolean existsById(Long id);
 }

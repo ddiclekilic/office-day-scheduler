@@ -1,32 +1,38 @@
 package com.base.ods.services.impl;
 
 import com.base.ods.domain.Department;
+import com.base.ods.domain.User;
 import com.base.ods.exception.EntityNotFoundException;
+import com.base.ods.exception.MethodNotAllowedException;
 import com.base.ods.mapper.DepartmentEntityToDTOMapper;
 import com.base.ods.mapper.UserEntityToDTOMapper;
 import com.base.ods.repository.DepartmentRepository;
+import com.base.ods.repository.UserRepository;
 import com.base.ods.services.IUserService;
 import com.base.ods.services.IDepartmentService;
 import com.base.ods.services.requests.DepartmentCreateRequestDTO;
 import com.base.ods.services.requests.DepartmentUpdateRequestDTO;
 import com.base.ods.services.responses.DepartmentResponseDTO;
 import com.base.ods.services.responses.UserResponseDTO;
+import com.base.ods.util.constants.Messages;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Log4j2
 public class DepartmentServiceImpl implements IDepartmentService {
     private DepartmentRepository departmentRepository;
     private IUserService userService;
+    private UserRepository userRepository;
     private DepartmentEntityToDTOMapper mapper;
-    private UserEntityToDTOMapper userMapper;
 
-    public DepartmentServiceImpl(DepartmentRepository departmentRepository, @Lazy IUserService userService, DepartmentEntityToDTOMapper mapper) {
+    public DepartmentServiceImpl(UserRepository userRepository, DepartmentRepository departmentRepository, @Lazy IUserService userService, DepartmentEntityToDTOMapper mapper) {
+        this.userRepository = userRepository;
         this.departmentRepository = departmentRepository;
         this.userService = userService;
         this.mapper = mapper;
@@ -50,14 +56,20 @@ public class DepartmentServiceImpl implements IDepartmentService {
 
     @Override
     public DepartmentResponseDTO getDepartmentById(Long id) {
-        Department department = departmentRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Department Not Found"));
+        Department department = departmentRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(Messages.DEPARTMENT_NOT_FOUND + id));
         DepartmentResponseDTO responseDTO = mapper.toDTO(department);
-        UserResponseDTO groupManager = userService.getUserById(department.getGroupManagerId());
+        Optional<User> groupManager = userRepository.findById(responseDTO.getGroupManagerId());
+        Optional<User> departmentManager = userRepository.findById(responseDTO.getDepartmentManagerId());
+        responseDTO.setDepartmentManagerFirstName(departmentManager.get().getFirstName());
+        responseDTO.setDepartmentManagerLastName(departmentManager.get().getLastName());
+        responseDTO.setGroupManagerFirstName(groupManager.get().getFirstName());
+        responseDTO.setGroupManagerLastName(groupManager.get().getLastName());
+        /*UserResponseDTO groupManager = userService.getUserById(department.getGroupManagerId());
         UserResponseDTO departmentManager = userService.getUserById(department.getDepartmentManagerId());
         responseDTO.setDepartmentManagerFirstName(departmentManager.getFirstName());
         responseDTO.setDepartmentManagerLastName(departmentManager.getLastName());
         responseDTO.setGroupManagerFirstName(groupManager.getFirstName());
-        responseDTO.setGroupManagerLastName(groupManager.getLastName());
+        responseDTO.setGroupManagerLastName(groupManager.getLastName());*/
         return responseDTO;
     }
 
@@ -77,7 +89,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
 
     @Override
     public DepartmentResponseDTO updateDepartment(DepartmentUpdateRequestDTO departmentUpdateRequestDTO) {
-        Department department = departmentRepository.findById(departmentUpdateRequestDTO.getId()).orElseThrow(() -> new EntityNotFoundException("Department Not Found"));
+        Department department = departmentRepository.findById(departmentUpdateRequestDTO.getId()).orElseThrow(() -> new EntityNotFoundException(Messages.DEPARTMENT_NOT_FOUND + departmentUpdateRequestDTO.getId()));
         UserResponseDTO groupManager = userService.getUserById(departmentUpdateRequestDTO.getGroupManagerId());
         UserResponseDTO departmentManager = userService.getUserById(departmentUpdateRequestDTO.getDepartmentManagerId());
         Department toUpdate = mapper.toEntity(departmentUpdateRequestDTO);
@@ -93,9 +105,12 @@ public class DepartmentServiceImpl implements IDepartmentService {
     @Override
     @Transactional
     public void deleteDepartmentsByIds(List<Long> ids) {
-        for(Long id:ids){
-            if(!departmentRepository.existsById(id)){
-                throw new EntityNotFoundException("Department with id "+id+" not found");
+        for (Long id : ids) {
+            if (!departmentRepository.existsById(id)) {
+                throw new EntityNotFoundException(Messages.DEPARTMENT_NOT_FOUND + id);
+            }
+            if (userService.departmentExists(id)) {
+                throw new MethodNotAllowedException("Department cannot be deleted");
             }
         }
         departmentRepository.deleteByIdIn(ids);

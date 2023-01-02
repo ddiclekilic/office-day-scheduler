@@ -6,6 +6,7 @@ import com.base.ods.services.requests.UserUpdateRequestDTO;
 import com.base.ods.services.responses.UserResponseDTO;
 
 import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 
 public interface IUserService {
@@ -18,6 +19,12 @@ public interface IUserService {
     UserResponseDTO updateUser(UserUpdateRequestDTO userUpdateRequestDTO);
 
     void deleteUsersByIds(List<Long> ids);
+
+    boolean roleExists(Long roleId);
+
+    boolean departmentExists(Long departmentId);
+
+    boolean zoneExists(Long zoneId);
 
     User getUserByEmail(String email);
 

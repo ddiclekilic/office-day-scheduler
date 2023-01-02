@@ -12,6 +12,7 @@ import com.base.ods.services.requests.ScheduleCreateRequestDTO;
 import com.base.ods.services.requests.ScheduleUpdateRequestDTO;
 import com.base.ods.services.responses.ScheduleResponseDTO;
 import com.base.ods.services.responses.UserResponseDTO;
+import com.base.ods.util.constants.Messages;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -39,7 +40,7 @@ public class ScheduleServiceImpl implements IScheduleService {
 
     @Override
     public ScheduleResponseDTO getScheduleById(Long id) {
-        Schedule schedule = scheduleRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Schedule Not Found"));
+        Schedule schedule = scheduleRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(Messages.SCHEDULE_NOT_FOUND + id));
         return mapper.toDTO(schedule);
     }
 
@@ -55,7 +56,7 @@ public class ScheduleServiceImpl implements IScheduleService {
 
     @Override
     public ScheduleResponseDTO updateSchedule(ScheduleUpdateRequestDTO scheduleUpdateRequestDTO) {
-        Schedule schedule = scheduleRepository.findById(scheduleUpdateRequestDTO.getId()).orElseThrow(() -> new EntityNotFoundException("Schedule Not Found"));
+        Schedule schedule = scheduleRepository.findById(scheduleUpdateRequestDTO.getId()).orElseThrow(() -> new EntityNotFoundException(Messages.SCHEDULE_NOT_FOUND + scheduleUpdateRequestDTO.getId()));
         UserResponseDTO userResponseDTO = userService.getUserById(schedule.getUser().getId());
         User user = userMapper.responseDTOToEntity(userResponseDTO);
         Schedule toUpdate = mapper.toEntity(scheduleUpdateRequestDTO);
@@ -67,9 +68,9 @@ public class ScheduleServiceImpl implements IScheduleService {
     @Override
     @Transactional
     public void deleteSchedulesByIds(List<Long> ids) {
-        for(Long id:ids){
-            if(!scheduleRepository.existsById(id)){
-                throw new EntityNotFoundException("Schedule with id "+id+" not found");
+        for (Long id : ids) {
+            if (!scheduleRepository.existsById(id)) {
+                throw new EntityNotFoundException(Messages.SCHEDULE_NOT_FOUND + id);
             }
         }
         scheduleRepository.deleteByIdIn(ids);

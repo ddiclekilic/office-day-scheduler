@@ -8,6 +8,7 @@ import com.base.ods.services.IOutOfOfficeDayService;
 import com.base.ods.services.requests.OutOfOfficeDayCreateRequestDTO;
 import com.base.ods.services.requests.OutOfOfficeDayUpdateRequestDTO;
 import com.base.ods.services.responses.OutOfOfficeDayResponseDTO;
+import com.base.ods.util.constants.Messages;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,7 @@ public class OutOfOfficeDayServiceImpl implements IOutOfOfficeDayService {
 
     @Override
     public OutOfOfficeDayResponseDTO getOutOfOfficeDayById(Long id) {
-        OutOfOfficeDay outOfOfficeDay = outOfOfficeDayRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Out of Office Day Not Found"));
+        OutOfOfficeDay outOfOfficeDay = outOfOfficeDayRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(Messages.OUT_OF_OFFICE_DAY_NOT_FOUND + id));
         return mapper.toDTO(outOfOfficeDay);
     }
 
@@ -43,7 +44,7 @@ public class OutOfOfficeDayServiceImpl implements IOutOfOfficeDayService {
 
     @Override
     public OutOfOfficeDayResponseDTO updateOutOfOfficeDay(OutOfOfficeDayUpdateRequestDTO outOfOfficeDay) {
-        OutOfOfficeDay officeDay = outOfOfficeDayRepository.findById(outOfOfficeDay.getId()).orElseThrow(() -> new EntityNotFoundException("Out of Office Day Not Found"));
+        OutOfOfficeDay officeDay = outOfOfficeDayRepository.findById(outOfOfficeDay.getId()).orElseThrow(() -> new EntityNotFoundException(Messages.OUT_OF_OFFICE_DAY_NOT_FOUND + outOfOfficeDay.getId()));
         OutOfOfficeDay toUpdate = mapper.toEntity(outOfOfficeDay);
         OutOfOfficeDay result = outOfOfficeDayRepository.save(toUpdate);
         return mapper.toDTO(result);
@@ -52,9 +53,9 @@ public class OutOfOfficeDayServiceImpl implements IOutOfOfficeDayService {
     @Override
     @Transactional
     public void deleteOutOfOfficeDaysByIds(List<Long> ids) {
-        for(Long id:ids){
-            if(!outOfOfficeDayRepository.existsById(id)){
-                throw new EntityNotFoundException("Office day with id "+id+" not found");
+        for (Long id : ids) {
+            if (!outOfOfficeDayRepository.existsById(id)) {
+                throw new EntityNotFoundException(Messages.OUT_OF_OFFICE_DAY_NOT_FOUND + id);
             }
         }
         outOfOfficeDayRepository.deleteByIdIn(ids);
