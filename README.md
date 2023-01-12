@@ -37,7 +37,7 @@ refresh.token.expires.in = 604800
 "proxy": "http://localhost:8090"
 ```
 
-## Front-End (React.js)
+### Front-End (React.js)
 - Install Node.js
 - Clone the project and open with Visual Studio Code
 - In this project, Material UI is used. If you get errors about MUI packages, you can install the mui in your terminal according to https://mui.com/
@@ -62,6 +62,7 @@ npm install mui-datatables --save --legacy-peer-deps
 * User is not able to login on the client side.
 * User is able to choose dates and mark them as Office or Work From Home on the client side, but the data is not saved to the database and user cannot remove the selected items from the calendar in order to make new choice.
 * User is able to use refresh token to get new access token on the server side, but there is no implementation on the client side.
+* When the authentication is completed in the client side, information such as logged in user's zone, report, vacation should be obtained and sent to database.
 
 ### Authentication & Authorization
 #### Roles
