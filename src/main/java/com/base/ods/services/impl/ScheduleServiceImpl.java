@@ -12,6 +12,7 @@ import com.base.ods.services.requests.ScheduleCreateRequestDTO;
 import com.base.ods.services.requests.ScheduleUpdateRequestDTO;
 import com.base.ods.services.responses.ScheduleResponseDTO;
 import com.base.ods.services.responses.UserResponseDTO;
+import com.base.ods.util.IdWrapper;
 import com.base.ods.util.constants.Messages;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -67,12 +68,12 @@ public class ScheduleServiceImpl implements IScheduleService {
 
     @Override
     @Transactional
-    public void deleteSchedulesByIds(List<Long> ids) {
-        for (Long id : ids) {
-            if (!scheduleRepository.existsById(id)) {
-                throw new EntityNotFoundException(Messages.SCHEDULE_NOT_FOUND + id);
+    public void deleteSchedulesByIds(IdWrapper ids) {
+        for (int i = 0; i < ids.getIds().size(); i++) {
+            if (!scheduleRepository.existsById(ids.getIds().get(i))) {
+                throw new EntityNotFoundException(Messages.SCHEDULE_NOT_FOUND + ids.getIds().get(i));
             }
         }
-        scheduleRepository.deleteByIdIn(ids);
+        scheduleRepository.deleteByIdIn(ids.getIds());
     }
 }

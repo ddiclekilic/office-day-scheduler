@@ -26,4 +26,5 @@ public class UserResponse {
     Long groupManagerId;
     String groupManagerFirstName;
     String groupManagerLastName;
+    String status;
 }

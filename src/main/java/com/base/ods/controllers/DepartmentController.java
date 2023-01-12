@@ -9,6 +9,7 @@ import com.base.ods.services.IDepartmentService;
 import com.base.ods.services.requests.DepartmentCreateRequestDTO;
 import com.base.ods.services.requests.DepartmentUpdateRequestDTO;
 import com.base.ods.services.responses.DepartmentResponseDTO;
+import com.base.ods.util.IdWrapper;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -54,7 +55,7 @@ public class DepartmentController {
     }
 
     @DeleteMapping
-    public void deleteDepartments(@RequestBody List<Long> ids) {
+    public void deleteDepartments(@RequestBody IdWrapper ids) {
         departmentService.deleteDepartmentsByIds(ids);
     }
 }

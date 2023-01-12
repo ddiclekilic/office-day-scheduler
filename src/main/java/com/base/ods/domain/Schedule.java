@@ -17,7 +17,6 @@ public class Schedule {
     Long id;
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="user_id", nullable = false)
-    //@OnDelete(action = OnDeleteAction.CASCADE)
     User user;
     @Column(nullable = false)
     double officeDay;

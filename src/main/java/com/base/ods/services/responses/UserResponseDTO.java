@@ -26,4 +26,5 @@ public class UserResponseDTO {
     Long groupManagerId;
     String groupManagerFirstName;
     String groupManagerLastName;
+    String status;
 }

@@ -4,6 +4,7 @@ package com.base.ods.services;
 import com.base.ods.services.requests.RoleCreateRequestDTO;
 import com.base.ods.services.requests.RoleUpdateRequestDTO;
 import com.base.ods.services.responses.RoleResponseDTO;
+import com.base.ods.util.IdWrapper;
 
 import java.util.List;
 
@@ -16,5 +17,5 @@ public interface IRoleService {
 
     RoleResponseDTO updateRole(RoleUpdateRequestDTO roleUpdateRequestDTO);
 
-    void deleteRolesByIds(List<Long> ids);
+    void deleteRolesByIds(IdWrapper ids);
 }

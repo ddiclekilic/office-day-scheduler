@@ -4,6 +4,7 @@ package com.base.ods.services;
 import com.base.ods.services.requests.ScheduleCreateRequestDTO;
 import com.base.ods.services.requests.ScheduleUpdateRequestDTO;
 import com.base.ods.services.responses.ScheduleResponseDTO;
+import com.base.ods.util.IdWrapper;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -17,6 +18,6 @@ public interface IScheduleService {
 
     ScheduleResponseDTO updateSchedule(ScheduleUpdateRequestDTO scheduleUpdateRequestDTO);
 
-    void deleteSchedulesByIds(List<Long> ids);
+    void deleteSchedulesByIds(IdWrapper ids);
 
 }

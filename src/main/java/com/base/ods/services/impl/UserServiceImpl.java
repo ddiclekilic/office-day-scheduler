@@ -1,6 +1,7 @@
 package com.base.ods.services.impl;
 
 import com.base.ods.domain.*;
+import com.base.ods.enums.Status;
 import com.base.ods.exception.EntityNotFoundException;
 import com.base.ods.mapper.DepartmentEntityToDTOMapper;
 import com.base.ods.mapper.RoleEntityToDTOMapper;
@@ -17,6 +18,7 @@ import com.base.ods.services.responses.UserResponseDTO;
 import com.base.ods.services.IDepartmentService;
 import com.base.ods.services.IZoneService;
 import com.base.ods.services.responses.ZoneResponseDTO;
+import com.base.ods.util.IdWrapper;
 import com.base.ods.util.constants.Messages;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -29,6 +31,7 @@ import javax.transaction.Transactional;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -45,8 +48,13 @@ public class UserServiceImpl implements IUserService {
     private DepartmentEntityToDTOMapper departmentMapper;
 
     @Override
-    public List<UserResponseDTO> getAllUsers(Pageable pageable) {
-        Page<User> userList = userRepository.findAll(pageable);
+    public List<UserResponseDTO> getAllUsers(Optional<Status> status, Pageable pageable) {
+        Page<User> userList;
+        if (status.isPresent()) {
+            userList = userRepository.findAllByStatus(status.get(), pageable);
+        } else {
+            userList = userRepository.findAll(pageable);
+        }
         List<UserResponseDTO> responseDTO = mapper.convert(userList);
         for (UserResponseDTO user : responseDTO) {
             DepartmentResponseDTO departmentDTO = departmentService.getDepartmentById(user.getDepartmentId());
@@ -82,7 +90,8 @@ public class UserServiceImpl implements IUserService {
         toSave.setRole(role);
         toSave.setZone(zone);
         toSave.setDepartment(department);
-        //user.setPassword(passwordEncoder.encode(userRequestDTO.getPassword())); //update
+        toSave.setStatus(Status.ACTIVE);
+        toSave.setPassword(passwordEncoder.encode(userCreateRequestDTO.getPassword()));
         User newUser = userRepository.save(toSave);
         UserResponseDTO result = mapper.toDTO(newUser);
         result.setDepartmentManagerFirstName(departmentDTO.getDepartmentManagerFirstName());
@@ -119,13 +128,12 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     @Transactional
-    public void deleteUsersByIds(List<Long> ids) {
-        for (Long id : ids) {
-            if (!userRepository.existsById(id)) {
-                throw new EntityNotFoundException(Messages.USER_NOT_FOUND + id);
-            }
+    public void deleteUsersByIds(IdWrapper ids) {
+        for (int i = 0; i < ids.getIds().size(); i++) {
+            int finalI = i;
+            User user = userRepository.findById(ids.getIds().get(i)).orElseThrow(() -> new EntityNotFoundException(Messages.USER_NOT_FOUND + ids.getIds().get(finalI)));
+            user.setStatus(Status.INACTIVE);
         }
-        userRepository.deleteByIdIn(ids);
     }
 
     @Override

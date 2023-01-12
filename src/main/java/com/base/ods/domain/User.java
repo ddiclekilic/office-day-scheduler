@@ -1,5 +1,6 @@
 package com.base.ods.domain;
 
+import com.base.ods.enums.Status;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -35,4 +36,6 @@ public class User {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", nullable = false)
     Role role;
+    @Enumerated(value = EnumType.STRING)
+    Status status;
 }

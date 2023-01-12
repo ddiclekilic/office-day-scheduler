@@ -1,5 +1,6 @@
 package com.base.ods.controllers.requests;
 
+import com.base.ods.enums.Status;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -26,4 +27,6 @@ public class UserUpdateRequest {
     Long zoneId;
     @NotNull(message = "Department Id is required")
     Long departmentId;
+    @NotNull(message = "Status is required")
+    Status status;
 }

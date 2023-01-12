@@ -20,4 +20,5 @@ public class ScheduleResponse {
     double report;
     String dateMonth;
     String dateYear;
+    String userStatus;
 }

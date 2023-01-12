@@ -21,6 +21,5 @@ public class Calendar {
     String dateMonth;
     @Column(nullable = false)
     String dateYear;
-    @Column(nullable = false)
     String days;
 }

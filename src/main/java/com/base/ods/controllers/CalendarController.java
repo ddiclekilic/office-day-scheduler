@@ -9,6 +9,7 @@ import com.base.ods.services.ICalendarService;
 import com.base.ods.services.requests.CalendarCreateRequestDTO;
 import com.base.ods.services.requests.CalendarUpdateRequestDTO;
 import com.base.ods.services.responses.CalendarResponseDTO;
+import com.base.ods.util.IdWrapper;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -55,7 +56,7 @@ public class CalendarController {
     }
 
     @DeleteMapping
-    public void deleteCalendarById(@RequestBody List<Long> ids) {
+    public void deleteCalendarById(@RequestBody IdWrapper ids) {
         calendarService.deleteCalendarsByIds(ids);
     }
 }

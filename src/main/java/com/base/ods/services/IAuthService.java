@@ -1,8 +1,8 @@
 package com.base.ods.services;
 
-import com.base.ods.requests.RefreshRequest;
-import com.base.ods.requests.UserRequest;
-import com.base.ods.responses.AuthResponse;
+import com.base.ods.controllers.requests.RefreshRequest;
+import com.base.ods.controllers.requests.UserRequest;
+import com.base.ods.controllers.responses.AuthResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 

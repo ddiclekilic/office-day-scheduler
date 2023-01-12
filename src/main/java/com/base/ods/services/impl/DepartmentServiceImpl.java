@@ -5,15 +5,15 @@ import com.base.ods.domain.User;
 import com.base.ods.exception.EntityNotFoundException;
 import com.base.ods.exception.MethodNotAllowedException;
 import com.base.ods.mapper.DepartmentEntityToDTOMapper;
-import com.base.ods.mapper.UserEntityToDTOMapper;
 import com.base.ods.repository.DepartmentRepository;
 import com.base.ods.repository.UserRepository;
 import com.base.ods.services.IUserService;
-import com.base.ods.services.IDepartmentService;
 import com.base.ods.services.requests.DepartmentCreateRequestDTO;
 import com.base.ods.services.requests.DepartmentUpdateRequestDTO;
 import com.base.ods.services.responses.DepartmentResponseDTO;
 import com.base.ods.services.responses.UserResponseDTO;
+import com.base.ods.services.IDepartmentService;
+import com.base.ods.util.IdWrapper;
 import com.base.ods.util.constants.Messages;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Lazy;
@@ -104,15 +104,15 @@ public class DepartmentServiceImpl implements IDepartmentService {
 
     @Override
     @Transactional
-    public void deleteDepartmentsByIds(List<Long> ids) {
-        for (Long id : ids) {
-            if (!departmentRepository.existsById(id)) {
-                throw new EntityNotFoundException(Messages.DEPARTMENT_NOT_FOUND + id);
+    public void deleteDepartmentsByIds(IdWrapper ids) {
+        for (int i = 0; i < ids.getIds().size(); i++) {
+            if (!departmentRepository.existsById(ids.getIds().get(i))) {
+                throw new EntityNotFoundException(Messages.DEPARTMENT_NOT_FOUND + ids.getIds().get(i));
             }
-            if (userService.departmentExists(id)) {
-                throw new MethodNotAllowedException("Department cannot be deleted");
+            if (userService.departmentExists(ids.getIds().get(i))) {
+                throw new MethodNotAllowedException("Department with Id " + ids.getIds().get(i) + "cannot be deleted");
             }
         }
-        departmentRepository.deleteByIdIn(ids);
+        departmentRepository.deleteByIdIn(ids.getIds());
     }
 }

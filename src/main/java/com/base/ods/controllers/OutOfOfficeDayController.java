@@ -8,6 +8,7 @@ import com.base.ods.services.IOutOfOfficeDayService;
 import com.base.ods.services.requests.OutOfOfficeDayCreateRequestDTO;
 import com.base.ods.services.requests.OutOfOfficeDayUpdateRequestDTO;
 import com.base.ods.services.responses.OutOfOfficeDayResponseDTO;
+import com.base.ods.util.IdWrapper;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -54,7 +55,7 @@ public class OutOfOfficeDayController {
     }
 
     @DeleteMapping
-    public void deleteOutOfOfficeDays(@RequestBody List<Long> ids) {
+    public void deleteOutOfOfficeDays(@RequestBody IdWrapper ids) {
         outOfOfficeDayService.deleteOutOfOfficeDaysByIds(ids);
     }
 }

@@ -3,11 +3,13 @@ package com.base.ods.controllers;
 import com.base.ods.controllers.requests.UserCreateRequest;
 import com.base.ods.controllers.requests.UserUpdateRequest;
 import com.base.ods.controllers.responses.UserResponse;
+import com.base.ods.enums.Status;
 import com.base.ods.mapper.UserResponseToDTOMapper;
 import com.base.ods.services.IUserService;
 import com.base.ods.services.requests.UserCreateRequestDTO;
 import com.base.ods.services.requests.UserUpdateRequestDTO;
 import com.base.ods.services.responses.UserResponseDTO;
+import com.base.ods.util.IdWrapper;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")
@@ -25,8 +28,8 @@ public class UserController {
     private UserResponseToDTOMapper mapper;
 
     @GetMapping
-    public ResponseEntity<List<UserResponse>> getAllUsers(Pageable pageable) {
-        List<UserResponseDTO> userList = userService.getAllUsers(pageable);
+    public ResponseEntity<List<UserResponse>> getAllUsers(@RequestParam Optional<Status> status, Pageable pageable) {
+        List<UserResponseDTO> userList = userService.getAllUsers(status, pageable);
         List<UserResponse> result = mapper.toResponseList(userList);
         return ResponseEntity.ok(result);
     }
@@ -55,7 +58,7 @@ public class UserController {
     }
 
     @DeleteMapping
-    public void deleteUsers(@RequestBody List<Long> ids) {
+    public void deleteUsers(@RequestBody IdWrapper ids) {
         userService.deleteUsersByIds(ids);
     }
 }

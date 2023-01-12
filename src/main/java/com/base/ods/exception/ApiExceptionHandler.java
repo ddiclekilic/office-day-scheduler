@@ -27,6 +27,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         List<String> errors = new ArrayList<>();
         errors.add(exception.getMessage());
         ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, errors, LocalDateTime.now());
+        log.error("Error occurred", exception);
         return new ResponseEntity<>(apiError, apiError.getStatus());
     }
 
@@ -39,6 +40,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         }
 
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, errors, LocalDateTime.now());
+        log.error("Error occurred", ex);
         return handleExceptionInternal(ex, apiError, new HttpHeaders(), apiError.getStatus(), request);
 
         //return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
@@ -49,6 +51,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         List<String> errors = new ArrayList<>();
         errors.add(exception.getMessage());
         ApiError apiError = new ApiError(HttpStatus.CONFLICT, errors, LocalDateTime.now());
+        log.error("Error occurred", exception);
         return new ResponseEntity<>(apiError, apiError.getStatus());
     }
 
@@ -57,6 +60,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         List<String> errors = new ArrayList<>();
         errors.add(exception.getMessage());
         ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, errors, LocalDateTime.now());
+        log.error("Error occurred", exception);
         return new ResponseEntity<>(apiError, apiError.getStatus());
     }
 
@@ -69,6 +73,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                 .map(fieldError -> fieldError.getDefaultMessage())
                 .collect(Collectors.toList());
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, errorList, LocalDateTime.now());
+        log.error("Error occurred", ex);
         return handleExceptionInternal(ex, apiError, headers, apiError.getStatus(), request);
     }
 
@@ -76,18 +81,17 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex, WebRequest request) {
         List<String> errors = new ArrayList<>();
         errors.add(ex.getMessage());
-
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, errors, LocalDateTime.now());
+        log.error("Error occurred", ex);
         return new ResponseEntity<>(apiError, apiError.getStatus());
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleAll(Exception ex, WebRequest request) {
-        log.error("Error occurred", ex);
         List<String> errors = new ArrayList<>();
-        errors.add("Error occurred");
         errors.add(ex.getMessage());
         ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, errors, LocalDateTime.now());
+        log.error("Error occurred", ex);
         return new ResponseEntity<>(apiError, apiError.getStatus());
     }
 }

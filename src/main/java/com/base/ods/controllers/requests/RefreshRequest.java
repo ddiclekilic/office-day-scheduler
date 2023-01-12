@@ -1,4 +1,4 @@
-package com.base.ods.requests;
+package com.base.ods.controllers.requests;
 
 import lombok.Data;
 

@@ -18,6 +18,7 @@ public interface ScheduleEntityToDTOMapper {
     @Mapping(source = "user.lastName", target = "userLastName")
     @Mapping(source = "user.registrationNumber", target = "registrationNumber")
     @Mapping(source = "user.email", target = "userEmail")
+    @Mapping(source = "user.status", target = "userStatus")
     ScheduleResponseDTO toDTO(Schedule schedule);
 
     @Mapping(source = "userId", target = "user.id")

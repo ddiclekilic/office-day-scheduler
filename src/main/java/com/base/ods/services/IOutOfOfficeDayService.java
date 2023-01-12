@@ -3,6 +3,7 @@ package com.base.ods.services;
 import com.base.ods.services.requests.OutOfOfficeDayCreateRequestDTO;
 import com.base.ods.services.requests.OutOfOfficeDayUpdateRequestDTO;
 import com.base.ods.services.responses.OutOfOfficeDayResponseDTO;
+import com.base.ods.util.IdWrapper;
 
 import java.util.List;
 
@@ -15,5 +16,5 @@ public interface IOutOfOfficeDayService {
 
     OutOfOfficeDayResponseDTO updateOutOfOfficeDay(OutOfOfficeDayUpdateRequestDTO outOfOfficeDay);
 
-    void deleteOutOfOfficeDaysByIds(List<Long> ids);
+    void deleteOutOfOfficeDaysByIds(IdWrapper ids);
 }

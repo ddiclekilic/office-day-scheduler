@@ -9,6 +9,7 @@ import com.base.ods.services.IScheduleService;
 import com.base.ods.services.requests.ScheduleCreateRequestDTO;
 import com.base.ods.services.requests.ScheduleUpdateRequestDTO;
 import com.base.ods.services.responses.ScheduleResponseDTO;
+import com.base.ods.util.IdWrapper;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -55,7 +56,7 @@ public class ScheduleController {
     }
 
     @DeleteMapping
-    public void deleteScheduleById(@RequestBody List<Long> ids) {
+    public void deleteScheduleById(@RequestBody IdWrapper ids) {
         scheduleService.deleteSchedulesByIds(ids);
     }
 }

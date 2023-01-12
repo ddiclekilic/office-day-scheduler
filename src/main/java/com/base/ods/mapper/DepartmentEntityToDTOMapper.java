@@ -5,7 +5,6 @@ import com.base.ods.services.requests.DepartmentCreateRequestDTO;
 import com.base.ods.services.requests.DepartmentUpdateRequestDTO;
 import com.base.ods.services.responses.DepartmentResponseDTO;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 import java.util.List;
 

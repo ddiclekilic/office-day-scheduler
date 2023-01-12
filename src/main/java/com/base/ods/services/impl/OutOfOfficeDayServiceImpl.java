@@ -8,6 +8,7 @@ import com.base.ods.services.IOutOfOfficeDayService;
 import com.base.ods.services.requests.OutOfOfficeDayCreateRequestDTO;
 import com.base.ods.services.requests.OutOfOfficeDayUpdateRequestDTO;
 import com.base.ods.services.responses.OutOfOfficeDayResponseDTO;
+import com.base.ods.util.IdWrapper;
 import com.base.ods.util.constants.Messages;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -52,12 +53,12 @@ public class OutOfOfficeDayServiceImpl implements IOutOfOfficeDayService {
 
     @Override
     @Transactional
-    public void deleteOutOfOfficeDaysByIds(List<Long> ids) {
-        for (Long id : ids) {
-            if (!outOfOfficeDayRepository.existsById(id)) {
-                throw new EntityNotFoundException(Messages.OUT_OF_OFFICE_DAY_NOT_FOUND + id);
+    public void deleteOutOfOfficeDaysByIds(IdWrapper ids) {
+        for (int i=0;i<ids.getIds().size();i++) {
+            if (!outOfOfficeDayRepository.existsById(ids.getIds().get(i))) {
+                throw new EntityNotFoundException(Messages.OUT_OF_OFFICE_DAY_NOT_FOUND + ids.getIds().get(i));
             }
         }
-        outOfOfficeDayRepository.deleteByIdIn(ids);
+        outOfOfficeDayRepository.deleteByIdIn(ids.getIds());
     }
 }

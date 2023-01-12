@@ -10,6 +10,7 @@ import com.base.ods.services.IZoneService;
 import com.base.ods.services.requests.ZoneCreateRequestDTO;
 import com.base.ods.services.requests.ZoneUpdateRequestDTO;
 import com.base.ods.services.responses.ZoneResponseDTO;
+import com.base.ods.util.IdWrapper;
 import com.base.ods.util.constants.Messages;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Lazy;
@@ -60,15 +61,15 @@ public class ZoneServiceImpl implements IZoneService {
 
     @Override
     @Transactional
-    public void deleteZonesByIds(List<Long> ids) {
-        for (Long id : ids) {
-            if (!zoneRepository.existsById(id)) {
-                throw new EntityNotFoundException(Messages.ZONE_NOT_FOUND + id);
+    public void deleteZonesByIds(IdWrapper ids) {
+        for (int i = 0; i < ids.getIds().size(); i++) {
+            if (!zoneRepository.existsById(ids.getIds().get(i))) {
+                throw new EntityNotFoundException(Messages.ZONE_NOT_FOUND + ids.getIds().get(i));
             }
-            if (userService.zoneExists(id)) {
-                throw new MethodNotAllowedException("Zone cannot be deleted");
+            if (userService.zoneExists(ids.getIds().get(i))) {
+                throw new MethodNotAllowedException("Zone with Id " + ids.getIds().get(i) + " cannot be deleted");
             }
         }
-        zoneRepository.deleteByIdIn(ids);
+        zoneRepository.deleteByIdIn(ids.getIds());
     }
 }

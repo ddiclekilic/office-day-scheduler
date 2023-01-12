@@ -8,6 +8,7 @@ import com.base.ods.services.IZoneService;
 import com.base.ods.services.requests.ZoneCreateRequestDTO;
 import com.base.ods.services.requests.ZoneUpdateRequestDTO;
 import com.base.ods.services.responses.ZoneResponseDTO;
+import com.base.ods.util.IdWrapper;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -53,7 +54,7 @@ public class ZoneController {
     }
 
     @DeleteMapping
-    public void deleteZone(@RequestBody List<Long> ids) {
+    public void deleteZone(@RequestBody IdWrapper ids) {
         zoneService.deleteZonesByIds(ids);
     }
 }

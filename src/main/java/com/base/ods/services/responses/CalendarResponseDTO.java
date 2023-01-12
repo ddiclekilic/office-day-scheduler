@@ -16,4 +16,6 @@ public class CalendarResponseDTO {
     String dateMonth;
     String dateYear;
     String days;
+    String userStatus;
+    int officeDay;
 }

@@ -16,6 +16,5 @@ public class CalendarCreateRequest {
     String dateMonth;
     @NotBlank(message = "Year information is required")
     String dateYear;
-    @NotBlank(message = "Days are required")
     String days;
 }

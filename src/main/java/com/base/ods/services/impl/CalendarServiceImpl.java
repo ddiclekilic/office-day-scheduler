@@ -12,6 +12,7 @@ import com.base.ods.services.requests.CalendarCreateRequestDTO;
 import com.base.ods.services.requests.CalendarUpdateRequestDTO;
 import com.base.ods.services.responses.CalendarResponseDTO;
 import com.base.ods.services.responses.UserResponseDTO;
+import com.base.ods.util.IdWrapper;
 import com.base.ods.util.constants.Messages;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -35,23 +36,36 @@ public class CalendarServiceImpl implements ICalendarService {
     public List<CalendarResponseDTO> getAllCalendars(Pageable pageable) {
         Page<Calendar> calendarList = calendarRepository.findAll(pageable);
         List<CalendarResponseDTO> responseDTO = mapper.convert(calendarList);
+        for (CalendarResponseDTO calendar : responseDTO) {
+            if (calendar.getDays() != null) {
+                calendar.setOfficeDay(calendar.getDays().split(",").length);
+            }
+        }
         return responseDTO;
     }
 
     @Override
     public CalendarResponseDTO getCalendarById(Long id) {
         Calendar calendar = calendarRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(Messages.CALENDAR_NOT_FOUND + id));
-        return mapper.toDTO(calendar);
+        CalendarResponseDTO responseDTO = mapper.toDTO(calendar);
+        if (responseDTO.getDays() != null) {
+            responseDTO.setOfficeDay(responseDTO.getDays().split(",").length);
+        }
+        return responseDTO;
     }
 
     @Override
     public CalendarResponseDTO createCalendar(CalendarCreateRequestDTO calendarCreateRequestDTO) {
-        UserResponseDTO responseDTO = userService.getUserById(calendarCreateRequestDTO.getUserId());
-        User user = userMapper.responseDTOToEntity(responseDTO);
+        UserResponseDTO userDTO = userService.getUserById(calendarCreateRequestDTO.getUserId());
+        User user = userMapper.responseDTOToEntity(userDTO);
         Calendar toSave = mapper.toEntity(calendarCreateRequestDTO);
         toSave.setUser(user);
         Calendar newCalendar = calendarRepository.save(toSave);
-        return mapper.toDTO(newCalendar);
+        CalendarResponseDTO responseDTO = mapper.toDTO(newCalendar);
+        if (responseDTO.getDays() != null) {
+            responseDTO.setOfficeDay(responseDTO.getDays().split(",").length);
+        }
+        return responseDTO;
     }
 
     @Override
@@ -62,17 +76,21 @@ public class CalendarServiceImpl implements ICalendarService {
         Calendar toUpdate = mapper.toEntity(calendarUpdateRequestDTO);
         toUpdate.setUser(user);
         Calendar result = calendarRepository.save(toUpdate);
-        return mapper.toDTO(result);
+        CalendarResponseDTO responseDTO = mapper.toDTO(result);
+        if (calendar.getDays() != null) {
+            responseDTO.setOfficeDay(responseDTO.getDays().split(",").length);
+        }
+        return responseDTO;
     }
 
     @Override
     @Transactional
-    public void deleteCalendarsByIds(List<Long> ids) {
-        for (Long id : ids) {
-            if (!calendarRepository.existsById(id)) {
-                throw new EntityNotFoundException(Messages.CALENDAR_NOT_FOUND + id);
+    public void deleteCalendarsByIds(IdWrapper ids) {
+        for (int i = 0; i < ids.getIds().size(); i++) {
+            if (!calendarRepository.existsById(ids.getIds().get(i))) {
+                throw new EntityNotFoundException(Messages.CALENDAR_NOT_FOUND + ids.getIds().get(i));
             }
         }
-        calendarRepository.deleteByIdIn(ids);
+        calendarRepository.deleteByIdIn(ids.getIds());
     }
 }

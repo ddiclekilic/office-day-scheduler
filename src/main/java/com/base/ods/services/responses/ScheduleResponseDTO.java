@@ -20,4 +20,5 @@ public class ScheduleResponseDTO {
     double report;
     String dateMonth;
     String dateYear;
+    String userStatus;
 }

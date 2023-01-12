@@ -1,8 +1,8 @@
 package com.base.ods.controllers;
 
-import com.base.ods.requests.RefreshRequest;
-import com.base.ods.requests.UserRequest;
-import com.base.ods.responses.AuthResponse;
+import com.base.ods.controllers.requests.RefreshRequest;
+import com.base.ods.controllers.requests.UserRequest;
+import com.base.ods.controllers.responses.AuthResponse;
 import com.base.ods.services.IAuthService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;

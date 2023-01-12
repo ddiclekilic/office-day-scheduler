@@ -1,3 +1,4 @@
+
 package com.base.ods.config;
 
 import com.base.ods.security.JwtAuthenticationEntryPoint;
@@ -26,6 +27,15 @@ import org.springframework.web.filter.CorsFilter;
 public class SecurityConfig {
     private UserDetailsServiceImpl userDetailsService;
     private JwtAuthenticationEntryPoint handler;
+    private static final String[] AUTH_LIST = {
+            "/role/**",
+            "/zone/**",
+            "/schedule/**",
+            "/user/**",
+            "/department/**",
+            "/outofofficeday/**",
+            "/calendar/**",
+    };
 
     public SecurityConfig(UserDetailsServiceImpl userDetailsService, JwtAuthenticationEntryPoint handler) {
         this.userDetailsService = userDetailsService;
@@ -76,32 +86,7 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers("/auth/**")
                 .permitAll()
-                .antMatchers(HttpMethod.POST, "/role")
-                .permitAll()
-                .antMatchers(HttpMethod.DELETE, "/role/**")
-                .permitAll()
-                .antMatchers(HttpMethod.GET, "/role/**")
-                .permitAll()
-                .antMatchers(HttpMethod.PUT, "/role/**")
-                .permitAll()
-                .antMatchers(HttpMethod.GET, "/outofofficeday/**")
-                .permitAll()
-                .antMatchers(HttpMethod.GET, "/user/**")
-                .permitAll()
-                .antMatchers(HttpMethod.GET, "/department/**")
-                .permitAll()
-                .antMatchers(HttpMethod.POST, "/outofofficeday")
-                .permitAll()
-                .antMatchers(HttpMethod.DELETE, "/outofofficeday/**")
-                .permitAll()
-                .antMatchers(HttpMethod.DELETE, "/department/**")
-                .permitAll()
-                .antMatchers(HttpMethod.POST, "/department")
-                .permitAll()
-                .antMatchers(HttpMethod.PUT, "/department/**")
-                .permitAll()
-                .antMatchers(HttpMethod.PUT, "/outofofficeday/**")
-                .permitAll()
+                .antMatchers(AUTH_LIST).permitAll()
                 .anyRequest().authenticated();
 
         httpSecurity.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

@@ -1,5 +1,6 @@
 package com.base.ods.services.requests;
 
+import com.base.ods.enums.Status;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -15,4 +16,5 @@ public class UserUpdateRequestDTO {
     Long roleId;
     Long zoneId;
     Long departmentId;
+    Status status;
 }

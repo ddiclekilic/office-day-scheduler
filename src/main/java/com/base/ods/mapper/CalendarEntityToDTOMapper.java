@@ -17,6 +17,7 @@ public interface CalendarEntityToDTOMapper {
     @Mapping(source = "user.lastName", target = "userLastName")
     @Mapping(source = "user.registrationNumber", target = "registrationNumber")
     @Mapping(source = "user.email", target = "userEmail")
+    @Mapping(source = "user.status", target = "userStatus")
     CalendarResponseDTO toDTO(Calendar calendar);
 
     @Mapping(source = "userId", target = "user.id")

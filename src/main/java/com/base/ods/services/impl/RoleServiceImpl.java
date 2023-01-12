@@ -11,6 +11,7 @@ import com.base.ods.services.IUserService;
 import com.base.ods.services.requests.RoleCreateRequestDTO;
 import com.base.ods.services.requests.RoleUpdateRequestDTO;
 import com.base.ods.services.responses.RoleResponseDTO;
+import com.base.ods.util.IdWrapper;
 import com.base.ods.util.constants.Messages;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Lazy;
@@ -66,15 +67,15 @@ public class RoleServiceImpl implements IRoleService {
 
     @Override
     @Transactional
-    public void deleteRolesByIds(List<Long> ids) {
-        for (Long id : ids) {
-            if (!roleRepository.existsById(id)) {
-                throw new EntityNotFoundException(Messages.ROLE_NOT_FOUND + id);
+    public void deleteRolesByIds(IdWrapper ids) {
+        for (int i = 0; i < ids.getIds().size(); i++) {
+            if (!roleRepository.existsById(ids.getIds().get(i))) {
+                throw new EntityNotFoundException(Messages.ROLE_NOT_FOUND + ids.getIds().get(i));
             }
-            if (userService.roleExists(id)) {
-                throw new MethodNotAllowedException("Role cannot be deleted");
+            if (userService.roleExists(ids.getIds().get(i))) {
+                throw new MethodNotAllowedException("Role with Id " + ids.getIds().get(i) + " cannot be deleted");
             }
         }
-        roleRepository.deleteByIdIn(ids);
+        roleRepository.deleteByIdIn(ids.getIds());
     }
 }

@@ -3,9 +3,9 @@ package com.base.ods.services.impl;
 import com.base.ods.domain.RefreshToken;
 import com.base.ods.domain.User;
 import com.base.ods.services.IAuthService;
-import com.base.ods.requests.RefreshRequest;
-import com.base.ods.requests.UserRequest;
-import com.base.ods.responses.AuthResponse;
+import com.base.ods.controllers.requests.RefreshRequest;
+import com.base.ods.controllers.requests.UserRequest;
+import com.base.ods.controllers.responses.AuthResponse;
 import com.base.ods.security.JwtTokenProvider;
 import com.base.ods.services.IRefreshTokenService;
 import com.base.ods.services.IUserService;
@@ -38,6 +38,10 @@ public class AuthServiceImpl implements IAuthService {
         authResponse.setRefreshToken(refreshTokenService.createRefreshToken(user));
         authResponse.setUserId(user.getId());
         authResponse.setRoleName(user.getRole().getRoleName());
+        authResponse.setFirstName(user.getFirstName());
+        authResponse.setLastName(user.getLastName());
+        authResponse.setRegistrationNumber(user.getRegistrationNumber());
+        authResponse.setEmail(user.getEmail());
         return authResponse;
     }
 
@@ -49,12 +53,12 @@ public class AuthServiceImpl implements IAuthService {
                 !refreshTokenService.isRefreshExpired(token)) {
             User user = token.getUser();
             String jwtToken = jwtTokenProvider.generateJwtTokenByUserId(user.getId());
-            response.setMessage("token successfully refreshed.");
+            //response.setMessage("token successfully refreshed.");
             response.setAccessToken("Bearer " + jwtToken);
             response.setUserId(user.getId());
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
-            response.setMessage("refresh token is not valid.");
+            //response.setMessage("refresh token is not valid.");
             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
         }
     }

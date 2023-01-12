@@ -4,6 +4,7 @@ package com.base.ods.services;
 import com.base.ods.services.requests.ZoneCreateRequestDTO;
 import com.base.ods.services.requests.ZoneUpdateRequestDTO;
 import com.base.ods.services.responses.ZoneResponseDTO;
+import com.base.ods.util.IdWrapper;
 
 import java.util.List;
 
@@ -16,6 +17,6 @@ public interface IZoneService {
 
     ZoneResponseDTO updateZone(ZoneUpdateRequestDTO zoneUpdateRequestDTO);
 
-    void deleteZonesByIds(List<Long> ids);
+    void deleteZonesByIds(IdWrapper ids);
 
 }
