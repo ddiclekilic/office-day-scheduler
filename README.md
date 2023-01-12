@@ -41,6 +41,7 @@ refresh.token.expires.in = 604800
 - Install Node.js
 - Clone the project and open with Visual Studio Code
 - In this project, Material UI is used. If you get errors about MUI packages, you can install the mui in your terminal according to https://mui.com/
+- Then, try "npm start" command to run project
 - If you get the following error, try running the following command 
 
 ```
