@@ -1,135 +1,103 @@
 # Office Day Scheduler
+<p align="justify"> Since employees have both the office and remote working options, it is desired to develop a system that will keep information such as which and how many days they come to the office for each month, which days they work remotely, information about the department they are affiliated with, how many days off they are, which region they come from and which transportation option they use. It was aimed to develop this system so that these actions can be performed using a certain common platform. </p>
 
-***Port : localhost:8090***
+## Used Technologies
+1. Back-end: Spring Boot 2.7.4
+2. Front-end: React.js
+3. Database: PostgreSQL
 
-#### AUTH
+## Installation 
+### Back-End
+- Clone from GitHub
+```
+git clone https://github.com/oguzhanulusoy/office-day-scheduler.git
+```
+- Install PostgreSQL and create a database. In order to configure the database connection, write your own username, password and the name of the database you created in the application.properties file. Setting the "spring.jpa.hibernate.ddl-auto" to "update" and running the project will create tables in the database.
+- Install Lombok and add to your IDE.
+### application.properties
+```
+spring.jpa.hibernate.ddl-auto = update
+spring.datasource.url = jdbc:postgresql://localhost:5432/ /* your database name */
+spring.datasource.username = /* your PostgreSQL username */
+spring.datasource.password = /* your PostgreSQL password */
+spring.datasource.driver-class-name = org.postgresql.Driver
+server.port = 8090 /* you can change the port */
+spring.jpa.show-sql = true
+spring.jpa.properties.hibernate.default_schema = public
+spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.PostgreSQLDialect
+ods.app.secret = odscheduler
+ods.expires.in = 60000
+refresh.token.expires.in = 604800
 
-- Login 
-    - /auth/login        : ***POST***
+```
+
+* Note: Make sure that the port number defined in the "package.json" file in the React project, is the same as the port number in "application.properties"
+
+```
+"proxy": "http://localhost:8090"
+```
+
+## Front-End (React.js)
+- Install Node.js
+- Clone the project and open with Visual Studio Code
+- In this project, Material UI is used. If you get errors about MUI packages, you can install the mui in your terminal according to https://mui.com/
+- If you get the following error, try running the following command 
+
+```
+npm install mui-datatables --save --legacy-peer-deps
+
+```
+![image1](/images/image1.jpg)
+
+## Scenarios
+* Role -> User is able to create, read, update and delete the data both on the server side and on the client side.
+* Out of Office Day -> User is able to create, read, update and delete the data both on the server side and on the client side.
+* Department -> User is able to create, read, update and delete the data both on the server side and on the client side.
+* Schedule -> User is able to create, read, update and delete the data on the server side. On the client side, user can only read data.
+* Calendar -> User is able to create, read, update and delete the data on the server side. On the client side, user can only read data.
+* User -> User is able to create, read, update and delete the data on the server side. On the client side, user can only read data.
+* Zone -> User is able to create, read, update and delete the data on the server side. On the client side, user can only read data.
+* User is able to login on the server side.
+* User is not able to login on the client side.
+* User is able to choose dates and mark them as Office or Work From Home on the client side, but the data is not saved to the database.
+* User is able to use refresh token to get new access token on the server side, but there is no implementation on the client side.
+
+### Authentication & Authorization
+#### Roles
+* EMPLOYEE
+* MANAGER
+* SUPER_USER
+
+<p align="justify"> If you want to login to the system and get the access token using Postman, you should have a user entity by sending POST request to "/user" URL. Before that, there is a relationship between "Role" & "User", "Zone" & "User" and "Department" & "User", so that you should create "Role", "Zone" and "Department" entities first. While sending POST request to "/zone", "/role" or "/department" URLs, be careful about the fields and validation rules defined in "RoleCreateRequest.java", "ZoneCreateRequest.java" and "DepartmentCreateRequest.java" classes. After that, create a user and try to send POST request to "/auth/login" URL using the following fields: </p> 
+
 ```
     {  
     "email":"example@gmail.com",
-    "password":"pass"
+    "password":"example"
     }
 ```
-- Refresh Token
-    - /auth/refresh      : ***POST***
+<p align="justify"> The antMatchers() is a Spring Boot HTTP method used to configure the URL paths from which the Spring Boot application security should permit requests based on the user's roles. By creating the AUTH_LIST list and passing the list as a parameter to the antMatchers() in the filterChain() method in the “SecurityConfig.java” class, we indicate that users can perform all actions throughout the application.  Otherwise, the user will receive a “401 Unauthorized” response status code.  You can edit the "AUTH_LIST" according to the restrictions you want to impose. </p>
 
-#### USER
+```
+ private static final String[] AUTH_LIST = {
+            "/role/**",
+            "/zone/**",
+            "/schedule/**",
+            "/user/**",
+            "/department/**",
+            "/outofofficeday/**",
+            "/calendar/**",
+    };
+```
 
-- User List
-    - /user         : ***GET***
-   
-- Get User By ID
-    - /user/{id}         : ***GET***
-    
-- Add User
-    - /user         : ***POST*** 
-    
-- Update User
-    - /user         : ***PUT***
-    
-- Delete User
-    - /user         : ***DELETE*** 
-    
-#### DEPARTMENT
+```
+.antMatchers(AUTH_LIST).permitAll()
 
-- Department List
-    - /department             : ***GET***
-    
-- Get Department by ID
-    - /department/{id}        : ***GET***
-    
-- Add Department
-    - /department             : ***POST***
-    
-- Update Department
-    - /department        : ***PUT***
-    
-- Delete Department
-    - /department        : ***DELETE***
+```
 
-#### ROLE
+	
+Screenshots           |  Screenshots 
+:-------------------------:|:-------------------------:
+![image5](/images/image5.jpg)  |  ![image2](/images/image2.jpg)
+![image3](/images/image3.jpg)  |  ![image4](/images/image4.jpg)
 
-- Role List
-    - /role         : ***GET***
-    
-- Get Role By ID
-    - /role/{id}         : ***GET***
-    
-- Add Role
-    - /role         : ***POST*** 
-    
-- Update Role
-    - /role        : ***PUT***
-    
-- Delete Role
-    - /role        : ***DELETE***
-    
-#### ZONE
-
-- Zone List
-    - /zone         : ***GET***
-    
-- Get Zone By ID
-    - /zone/{id}         : ***GET***
-    
-- Add Zone
-    - /zone         : ***POST*** 
-    
-- Update Zone
-    - /zone         : ***PUT***
-    
-- Delete Zone
-    - /zone         : ***DELETE***
-    
-#### SCHEDULE
-
-- Schedule List
-    - /schedule         : ***GET***
-    
-- Get Schedule By ID
-    - /schedule/{id}         : ***GET***
-    
-- Add Schedule
-    - /schedule         : ***POST*** 
-    
-- Update Schedule
-    - /schedule         : ***PUT***
-    
-- Delete Schedule
-    - /schedule         : ***DELETE***    
-    
-#### OUT OF OFFICE DAY
-
-- Out of Office Day List
-    - /outofofficeday         : ***GET***
-    
-- Get Out of Office Day By ID
-    - /outofofficeday/{id}         : ***GET***
-    
-- Add Out of Office Day
-    - /outofofficeday         : ***POST*** 
-    
-- Update Out of Office Day
-    - /outofofficeday         : ***PUT***
-    
-- Delete Out of Office Day
-    - /outofofficeday         : ***DELETE***  
-
-#### CALENDAR
-
-- Calendar List
-    - /calendar         : ***GET***
-    
-- Get Calendar By ID
-    - /calendar/{id}         : ***GET***
-    
-- Add Calendar
-    - /calendar         : ***POST*** 
-    
-- Update Calendar
-    - /calendar         : ***PUT***
-    
-- Delete Calendar
-    - /calendar         : ***DELETE*** 
