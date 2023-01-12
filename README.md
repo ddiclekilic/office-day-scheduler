@@ -54,13 +54,13 @@ npm install mui-datatables --save --legacy-peer-deps
 * Role -> User is able to create, read, update and delete the data both on the server side and on the client side.
 * Out of Office Day -> User is able to create, read, update and delete the data both on the server side and on the client side.
 * Department -> User is able to create, read, update and delete the data both on the server side and on the client side.
-* Schedule -> User is able to create, read, update and delete the data on the server side. On the client side, user can only read data.
-* Calendar -> User is able to create, read, update and delete the data on the server side. On the client side, user can only read data.
-* User -> User is able to create, read, update and delete the data on the server side. On the client side, user can only read data.
-* Zone -> User is able to create, read, update and delete the data on the server side. On the client side, user can only read data.
+* Schedule -> User is able to create, read, update and delete the data on the server side. On the client side, user can only read data. The user interface needs to be improved so that data can be added, updated and deleted.
+* Calendar -> User is able to create, read, update and delete the data on the server side. On the client side, user can only read data. The user interface needs to be improved so that data can be added, updated and deleted.
+* User -> User is able to create, read, update and delete the data on the server side. On the client side, user can only read data. The user interface needs to be improved so that data can be updated.
+* Zone -> User is able to create, read, update and delete the data on the server side. On the client side, user can only read data. The user interface needs to be improved so that data can be added, updated and deleted.
 * User is able to login on the server side.
 * User is not able to login on the client side.
-* User is able to choose dates and mark them as Office or Work From Home on the client side, but the data is not saved to the database.
+* User is able to choose dates and mark them as Office or Work From Home on the client side, but the data is not saved to the database and user cannot remove the selected items from the calendar in order to make new choice.
 * User is able to use refresh token to get new access token on the server side, but there is no implementation on the client side.
 
 ### Authentication & Authorization
