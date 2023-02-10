@@ -97,9 +97,3 @@ npm install mui-datatables --save --legacy-peer-deps
 
 ```
 
-	
-Screenshots           |  Screenshots 
-:-------------------------:|:-------------------------:
-![image5](/docs/image5.jpg)  |  ![image2](/docs/image2.jpg)
-![image3](/docs/image3.jpg)  |  ![image4](/docs/image4.jpg)
-
